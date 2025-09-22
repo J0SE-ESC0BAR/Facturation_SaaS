@@ -1,0 +1,192 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<!-- Hero Section -->
+<section class="hero bg-primary text-white py-5 mb-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Facturación Electrónica Simple y Eficiente
+                </h1>
+                <p class="lead mb-4">
+                    La plataforma SaaS más completa para gestionar tu facturación electrónica. 
+                    Crea, envía y administra tus facturas de forma automática y cumple con todos los requisitos fiscales.
+                </p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg px-4 me-md-2">
+                        <i class="fas fa-rocket me-2"></i>
+                        Comenzar Gratis
+                    </a>
+                    <a href="#features" class="btn btn-outline-light btn-lg px-4">
+                        Conocer Más
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="fas fa-file-invoice-dollar" style="font-size: 12rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold">¿Por qué elegir nuestra plataforma?</h2>
+                <p class="lead text-muted">
+                    Diseñada para empresas de todos los tamaños que buscan automatizar su proceso de facturación
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-bolt text-warning" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4>Facturación Rápida</h4>
+                        <p class="text-muted">
+                            Crea facturas en segundos con nuestro sistema intuitivo. 
+                            Plantillas personalizables y datos pre-llenados.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-shield-alt text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4>100% Legal</h4>
+                        <p class="text-muted">
+                            Cumple con todos los requisitos fiscales. 
+                            Integración automática con las autoridades tributarias.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-chart-line text-info" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4>Reportes Avanzados</h4>
+                        <p class="text-muted">
+                            Analiza tu negocio con reportes detallados. 
+                            Exporta a Excel, PDF y otros formatos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold">Planes que se adaptan a tu negocio</h2>
+                <p class="lead text-muted">Comienza gratis y escala según tus necesidades</p>
+            </div>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <h3>Básico</h3>
+                            <div class="display-6 fw-bold text-primary">Gratis</div>
+                            <p class="text-muted">Para empezar</p>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Hasta 10 facturas/mes</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>1 empresa</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Soporte por email</li>
+                        </ul>
+                        <div class="d-grid">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">Comenzar Gratis</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow border-primary">
+                    <div class="badge bg-primary position-absolute top-0 start-50 translate-middle px-3 py-2">
+                        Más Popular
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <h3>Profesional</h3>
+                            <div class="display-6 fw-bold text-primary">$29<small class="fs-6 text-muted">/mes</small></div>
+                            <p class="text-muted">Para empresas en crecimiento</p>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Facturas ilimitadas</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>3 empresas</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>API acceso</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Soporte prioritario</li>
+                        </ul>
+                        <div class="d-grid">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Elegir Plan</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <h3>Corporativo</h3>
+                            <div class="display-6 fw-bold text-primary">$99<small class="fs-6 text-muted">/mes</small></div>
+                            <p class="text-muted">Para grandes empresas</p>
+                        </div>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Todo lo anterior</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Empresas ilimitadas</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Integraciones avanzadas</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Soporte 24/7</li>
+                        </ul>
+                        <div class="d-grid">
+                            <a href="#" class="btn btn-outline-primary">Contactar Ventas</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold mb-4">¿Listo para digitalizar tu facturación?</h2>
+                <p class="lead mb-4">
+                    Únete a miles de empresas que ya confían en nuestra plataforma para su facturación electrónica
+                </p>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-rocket me-2"></i>
+                    Comenzar Ahora
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

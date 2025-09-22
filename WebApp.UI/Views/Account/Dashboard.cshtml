@@ -1,0 +1,273 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    @if (!string.IsNullOrEmpty(User.FindFirst("picture")?.Value))
+                    {
+                        <img src="@User.FindFirst("picture")?.Value" alt="Foto de perfil" 
+                             class="rounded-circle mb-2" style="width: 60px; height: 60px;">
+                    }
+                    else
+                    {
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                             style="width: 60px; height: 60px; font-size: 1.5rem;">
+                            @if (!string.IsNullOrEmpty(User.Identity?.Name))
+                            {
+                                @User.Identity.Name.Substring(0, 1).ToUpper()
+                            }
+                            else
+                            {
+                                <i class="fas fa-user"></i>
+                            }
+                        </div>
+                    }
+                    <h5 class="mb-1">¡Bienvenido!</h5>
+                    <small class="text-muted">@User.Identity?.Name</small>
+                </div>
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-file-invoice me-2"></i>
+                            Facturas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-users me-2"></i>
+                            Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-box me-2"></i>
+                            Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Reportes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-cog me-2"></i>
+                            Configuración
+                        </a>
+                    </li>
+                </ul>
+
+                <hr>
+                
+                <form asp-action="Logout" asp-controller="Account" method="post" class="mt-auto">
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>
+                        Nueva Factura
+                    </button>
+                </div>
+            </div>
+
+            <!-- User Info Card -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Información de la Cuenta
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Nombre:</strong> @User.Identity?.Name</p>
+                                    <p><strong>Email:</strong> @User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Proveedor de Autenticación:</strong> 
+                                        @if (User.FindFirst("provider")?.Value == "Google")
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fab fa-google me-1"></i>Google
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-primary">
+                                                <i class="fas fa-envelope me-1"></i>Email
+                                            </span>
+                                        }
+                                    </p>
+                                    <p><strong>ID de Usuario:</strong> @User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Facturas Este Mes</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">15</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-file-invoice fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Ingresos Este Mes</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">$25,450</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Facturas Pendientes</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">7</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Clientes Activos</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">42</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Invoices Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Facturas Recientes</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>FAC-001</td>
+                                    <td>Empresa ABC S.A.</td>
+                                    <td>2024-01-15</td>
+                                    <td><span class="badge bg-success">Pagada</span></td>
+                                    <td>$1,250.00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">Ver</button>
+                                        <button class="btn btn-sm btn-secondary">PDF</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>FAC-002</td>
+                                    <td>Comercial XYZ Ltda.</td>
+                                    <td>2024-01-14</td>
+                                    <td><span class="badge bg-warning">Pendiente</span></td>
+                                    <td>$2,800.00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">Ver</button>
+                                        <button class="btn btn-sm btn-secondary">PDF</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>FAC-003</td>
+                                    <td>Servicios DEF S.A.S.</td>
+                                    <td>2024-01-13</td>
+                                    <td><span class="badge bg-success">Pagada</span></td>
+                                    <td>$750.00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">Ver</button>
+                                        <button class="btn btn-sm btn-secondary">PDF</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+}

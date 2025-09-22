@@ -1,0 +1,50 @@
+# Visual Studio / .NET
+.vs/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+**/TestResults/
+**/Coverage*/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDEs
+.idea/
+*.sln.iml
+.vscode/
+
+# Packages / Artifacts
+packages/
+*.nupkg
+*.snupkg
+
+# Logs / OS
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Node (if present)
+node_modules/
+wwwroot/node_modules/
+
+# LibMan (if used)
+wwwroot/lib/
+
+# Publish / profiles
+**/Properties/PublishProfiles/*.pubxml.user
+**/Properties/PublishProfiles/*.pubxml~
+
+# Secrets and local settings
+.env
+.env.*
+secrets.json
+# Evitar subir secretos: usa *.example y User Secrets
+**/appsettings.json
+**/appsettings.Development.json
+**/appsettings.*.Development.json
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+# Puedes commitear appsettings.json.example

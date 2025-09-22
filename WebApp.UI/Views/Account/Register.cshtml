@@ -1,0 +1,171 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Registro";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h2 class="h4">Crear Cuenta</h2>
+                        <p class="text-muted">Únete a nuestra plataforma de facturación</p>
+                    </div>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <!-- Registro con Google -->
+                    <form asp-action="GoogleLogin" method="post">
+                        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fab fa-google me-2"></i>
+                                Registrarse con Google
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center my-3">
+                        <small class="text-muted">o</small>
+                    </div>
+
+                    <!-- Registro con Email -->
+                    <form asp-action="Register" method="post">
+                        <input type="hidden" asp-for="ReturnUrl" />
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label"></label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Juan" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label"></label>
+                                <input asp-for="LastName" class="form-control" placeholder="Pérez" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="correo@ejemplo.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" placeholder="Mínimo 6 caracteres" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                            <div class="form-text">
+                                La contraseña debe tener al menos 6 caracteres, incluyendo mayúsculas, minúsculas y números.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirma tu contraseña" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="AcceptTerms" class="form-check-input" />
+                            <label asp-for="AcceptTerms" class="form-check-label">
+                                Acepto los <a href="#" class="text-decoration-none">Términos y Condiciones</a> 
+                                y la <a href="#" class="text-decoration-none">Política de Privacidad</a>
+                            </label>
+                            <span asp-validation-for="AcceptTerms" class="text-danger d-block"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Crear Cuenta
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <small class="text-muted">
+                            Al crear una cuenta, aceptas automáticamente nuestros términos de servicio 
+                            y política de privacidad.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    ¿Ya tienes una cuenta? 
+                    <a asp-action="Login" class="text-decoration-none fw-bold">Inicia sesión aquí</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Verificar fortaleza de la contraseña
+        document.getElementById('Password').addEventListener('input', function() {
+            const password = this.value;
+            const feedback = document.createElement('div');
+            feedback.className = 'password-strength mt-1';
+            
+            let strength = 0;
+            let feedback_text = '';
+            let feedback_class = '';
+            
+            if (password.length >= 6) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            switch(strength) {
+                case 0:
+                case 1:
+                    feedback_text = 'Muy débil';
+                    feedback_class = 'text-danger';
+                    break;
+                case 2:
+                    feedback_text = 'Débil';
+                    feedback_class = 'text-warning';
+                    break;
+                case 3:
+                    feedback_text = 'Buena';
+                    feedback_class = 'text-info';
+                    break;
+                case 4:
+                case 5:
+                    feedback_text = 'Fuerte';
+                    feedback_class = 'text-success';
+                    break;
+            }
+            
+            // Remover feedback anterior
+            const existing = this.parentNode.querySelector('.password-strength');
+            if (existing) existing.remove();
+            
+            if (password.length > 0) {
+                feedback.innerHTML = `<small class="${feedback_class}">Fortaleza: ${feedback_text}</small>`;
+                this.parentNode.appendChild(feedback);
+            }
+        });
+    </script>
+}
