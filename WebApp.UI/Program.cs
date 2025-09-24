@@ -119,24 +119,35 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Apply schema creation
+// Apply migrations properly (development only)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DatabaseMigration");
+    
     if (app.Environment.IsDevelopment())
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
-        var pending = await context.Database.GetPendingMigrationsAsync();
-        if (pending.Any())
+        logger.LogInformation("Development environment: Checking for pending migrations...");
+        
+        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+        if (pendingMigrations.Any())
         {
-            logger.LogInformation("Applying {Count} pending migrations...", pending.Count());
+            logger.LogInformation("Applying {Count} pending migrations: {Migrations}", 
+                pendingMigrations.Count(), 
+                string.Join(", ", pendingMigrations));
+            
             await context.Database.MigrateAsync();
+            logger.LogInformation("All migrations applied successfully");
         }
         else
         {
-            logger.LogInformation("No migrations found. Ensuring database is created...");
-            await context.Database.EnsureCreatedAsync();
+            logger.LogInformation("Database is up to date, no pending migrations found");
         }
+    }
+    else
+    {
+        logger.LogInformation("Production environment: Migrations should be applied manually using scripts");
+        logger.LogWarning("Automatic migrations are disabled in production for safety");
     }
 }
 
