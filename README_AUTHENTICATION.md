@@ -1,6 +1,6 @@
-# Sistema de Autenticación - Facturación SaaS
+# Sistema de AutenticaciÃ³n - FacturaciÃ³n SaaS
 
-## ?? Manejo de secretos y configuración
+## ğŸ” Manejo de secretos y configuraciÃ³n
 
 Este repo ignora `appsettings.json` y archivos locales para evitar subir secretos. Para correr localmente:
 
@@ -8,48 +8,65 @@ Este repo ignora `appsettings.json` y archivos locales para evitar subir secreto
    - `ConnectionStrings:DefaultConnection`
    - `Authentication:Google:ClientId`
    - `Authentication:Google:ClientSecret`
+   - `Authentication:Microsoft:ClientId`
+   - `Authentication:Microsoft:ClientSecret`
 
 2. Alternativa recomendada (solo desarrollo): User Secrets
    - En `WebApp.UI`:
      - `dotnet user-secrets init`
      - `dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=...;Database=...;..."`
-     - `dotnet user-secrets set "Authentication:Google:ClientId" "...""`
+     - `dotnet user-secrets set "Authentication:Google:ClientId" "..."`
      - `dotnet user-secrets set "Authentication:Google:ClientSecret" "..."`
+     - `dotnet user-secrets set "Authentication:Microsoft:ClientId" "..."`
+     - `dotnet user-secrets set "Authentication:Microsoft:ClientSecret" "..."`
 
-3. Producción/CI: variables de entorno
+3. ProducciÃ³n/CI: variables de entorno
    - `ConnectionStrings__DefaultConnection`
    - `Authentication__Google__ClientId`
    - `Authentication__Google__ClientSecret`
+   - `Authentication__Microsoft__ClientId`
+   - `Authentication__Microsoft__ClientSecret`
 
 ---
 
-## ? IMPLEMENTACIÓN COMPLETADA
+## âœ… IMPLEMENTACIÃ“N COMPLETADA
 
 ### Funcionalidades Implementadas
 
-- ? **Login con Email y Contraseña**
-- ? **Login con Google OAuth**
-- ? **Registro con Email y Contraseña**
-- ? **Registro con Google OAuth**
-- ? **Recuperación de Contraseña**
-- ? **Dashboard Personalizado**
-- ? **Integración con Entity Framework Identity**
-- ? **Base de datos automatizada**
+- âœ… **Login con Email y ContraseÃ±a**
+- âœ… **Login con Google OAuth**
+- âœ… **Login con Microsoft OAuth**
+- âœ… **Registro con Email y ContraseÃ±a**
+- âœ… **Registro con Google OAuth**
+- âœ… **Registro con Microsoft OAuth**
+- âœ… **RecuperaciÃ³n de ContraseÃ±a**
+- âœ… **Dashboard Personalizado**
+- âœ… **IntegraciÃ³n con Entity Framework Identity**
+- âœ… **Base de datos automatizada**
 
 ---
 
-## ?? PASOS PARA USAR EL SISTEMA
+## ğŸš€ PASOS PARA USAR EL SISTEMA
 
-### 1. Configurar Google OAuth (Si aún no está configurado)
+### 1. Configurar OAuth Providers
 
+#### Google OAuth (Si aÃºn no estÃ¡ configurado)
 1. **Ve a Google Cloud Console**: https://console.cloud.google.com/
-2. **Selecciona tu proyecto**: Facturación SaaS
+2. **Selecciona tu proyecto**: FacturaciÃ³n SaaS
 3. **Ve a APIs y servicios > Credenciales**
 4. **Edita tu ID de cliente OAuth**
-5. **Configura la URL de redirección**: `https://localhost:7230/signin-google`
+5. **Configura la URL de redirecciÃ³n**: `https://localhost:7230/signin-google`
 6. **Guarda los cambios**
 
-### 2. Ejecutar la Aplicación
+#### Microsoft OAuth
+1. **Ve a Azure Portal**: https://portal.azure.com/
+2. **Ve a Microsoft Entra ID > Registros de aplicaciones**
+3. **Selecciona tu aplicaciÃ³n** o crea una nueva
+4. **Configura la URL de redirecciÃ³n**: `https://localhost:7230/signin-microsoft`
+5. **ObtÃ©n el Client ID y Client Secret**
+6. **Guarda los cambios**
+
+### 2. Ejecutar la AplicaciÃ³n
 
 ```bash
 cd WebApp.UI
@@ -58,76 +75,78 @@ dotnet run
 
 ### 3. URLs Disponibles
 
-- **Página Principal**: https://localhost:7230/
+- **PÃ¡gina Principal**: https://localhost:7230/
 - **Login**: https://localhost:7230/Account/Login
 - **Registro**: https://localhost:7230/Account/Register
 - **Dashboard**: https://localhost:7230/Account/Dashboard
-- **Recuperar Contraseña**: https://localhost:7230/Account/ForgotPassword
+- **Recuperar ContraseÃ±a**: https://localhost:7230/Account/ForgotPassword
 
 ---
 
-## ?? FUNCIONALIDADES DETALLADAS
+## ğŸ¯ FUNCIONALIDADES DETALLADAS
 
-### ?? Login (https://localhost:7230/Account/Login)
-
-**Opciones disponibles:**
-- **Email y Contraseña**: Los usuarios registrados pueden iniciar sesión con sus credenciales
-- **Google OAuth**: Botón "Continuar con Google" para autenticación externa
-- **Recordarme**: Checkbox para mantener la sesión activa
-- **¿Olvidaste tu contraseña?**: Enlace para recuperación
-
-### ?? Registro (https://localhost:7230/Account/Register)
+### ğŸ” Login (https://localhost:7230/Account/Login)
 
 **Opciones disponibles:**
-- **Registro con Google**: Botón para registrarse usando cuenta de Google
+- **Email y ContraseÃ±a**: Los usuarios registrados pueden iniciar sesiÃ³n con sus credenciales
+- **Google OAuth**: BotÃ³n "Continuar con Google" para autenticaciÃ³n externa
+- **Microsoft OAuth**: BotÃ³n "Continuar con Microsoft" para autenticaciÃ³n externa
+- **Recordarme**: Checkbox para mantener la sesiÃ³n activa
+- **Â¿Olvidaste tu contraseÃ±a?**: Enlace para recuperaciÃ³n
+
+### ğŸ“ Registro (https://localhost:7230/Account/Register)
+
+**Opciones disponibles:**
+- **Registro con Google**: BotÃ³n para registrarse usando cuenta de Google
+- **Registro con Microsoft**: BotÃ³n para registrarse usando cuenta de Microsoft
 - **Registro con Email**: Formulario completo con:
   - Nombre y Apellido
-  - Correo electrónico
-  - Contraseña (con validación de fortaleza)
-  - Confirmación de contraseña
-  - Checkbox de términos y condiciones
+  - Correo electrÃ³nico
+  - ContraseÃ±a (con validaciÃ³n de fortaleza)
+  - ConfirmaciÃ³n de contraseÃ±a
+  - Checkbox de tÃ©rminos y condiciones
 
 **Validaciones implementadas:**
-- Email único en el sistema
-- Contraseña mínimo 6 caracteres con mayúsculas, minúsculas y números
-- Confirmación de contraseña debe coincidir
-- Aceptación obligatoria de términos
+- Email Ãºnico en el sistema
+- ContraseÃ±a mÃ­nimo 6 caracteres con mayÃºsculas, minÃºsculas y nÃºmeros
+- ConfirmaciÃ³n de contraseÃ±a debe coincidir
+- AceptaciÃ³n obligatoria de tÃ©rminos
 
-### ?? Dashboard (https://localhost:7230/Account/Dashboard)
+### ğŸ“Š Dashboard (https://localhost:7230/Account/Dashboard)
 
-**Características:**
-- **Información del usuario**: Muestra datos del usuario autenticado
-- **Foto de perfil**: Si se registró con Google, muestra la foto
-- **Proveedor de autenticación**: Badge indicando si usó email o Google
-- **Sidebar de navegación**: Enlaces a futuras funcionalidades
-- **KPIs simulados**: Tarjetas con métricas de ejemplo
-- **Tabla de facturas**: Datos de ejemplo para demostración
+**CaracterÃ­sticas:**
+- **InformaciÃ³n del usuario**: Muestra datos del usuario autenticado
+- **Foto de perfil**: Si se registrÃ³ con Google, muestra la foto
+- **Proveedor de autenticaciÃ³n**: Badge indicando si usÃ³ email, Google o Microsoft
+- **Sidebar de navegaciÃ³n**: Enlaces a futuras funcionalidades
+- **KPIs simulados**: Tarjetas con mÃ©tricas de ejemplo
+- **Tabla de facturas**: Datos de ejemplo para demostraciÃ³n
 
-### ?? Recuperación de Contraseña
+### ğŸ”‘ RecuperaciÃ³n de ContraseÃ±a
 
 **Flujo implementado:**
 1. Usuario ingresa su email
-2. Sistema genera token de recuperación
-3. Se muestra confirmación (en desarrollo, el token se logea en consola)
-4. Usuario recibe enlace para restablecer contraseña
+2. Sistema genera token de recuperaciÃ³n
+3. Se muestra confirmaciÃ³n (en desarrollo, el token se logea en consola)
+4. Usuario recibe enlace para restablecer contraseÃ±a
 
 ---
 
-## ??? BASE DE DATOS
+## ğŸ—„ï¸ BASE DE DATOS
 
-### Configuración Automática
+### ConfiguraciÃ³n AutomÃ¡tica
 
-La aplicación está configurada para crear automáticamente la base de datos en desarrollo:
+La aplicaciÃ³n estÃ¡ configurada para crear automÃ¡ticamente la base de datos en desarrollo:
 
 - **Proveedor**: SQL Server
-- **Creación automática**: Aplica migraciones si existen; si no, `EnsureCreated`
+- **CreaciÃ³n automÃ¡tica**: Aplica migraciones si existen; si no, `EnsureCreated`
 
 ### Tablas Creadas por Identity
 
 - `AspNetUsers` - Usuarios del sistema
 - `AspNetRoles` - Roles (si se implementan en el futuro)
 - `AspNetUserClaims` - Claims de usuarios
-- `AspNetUserLogins` - Logins externos (Google, etc.)
+- `AspNetUserLogins` - Logins externos (Google, Microsoft, etc.)
 - `AspNetUserTokens` - Tokens de seguridad
 - Y otras tablas auxiliares de Identity
 
@@ -149,46 +168,70 @@ public class ApplicationUser : IdentityUser
 
 ---
 
-## ?? CONFIGURACIÓN TÉCNICA
+## âš™ï¸ CONFIGURACIÃ“N TÃ‰CNICA
 
 ### Paquetes NuGet Instalados
 
 ```xml
 <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.20" />
+<PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.20" />
 <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.20" />
 <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.20" />
 <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.20" />
 <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.20" />
 ```
 
+### ConfiguraciÃ³n de OAuth en Program.cs
+
+```csharp
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+        options.SaveTokens = true;
+        options.Scope.Add("email");
+        options.Scope.Add("profile");
+    })
+    .AddMicrosoftAccount(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]!;
+        options.SaveTokens = true;
+        options.Scope.Add("https://graph.microsoft.com/user.read");
+    });
+```
+
 ### Configuraciones de Seguridad
 
-**Contraseñas:**
-- Mínimo 6 caracteres
-- Requiere mayúsculas, minúsculas y números
+**ContraseÃ±as:**
+- MÃ­nimo 6 caracteres
+- Requiere mayÃºsculas, minÃºsculas y nÃºmeros
 - No requiere caracteres especiales
-- Bloqueo después de 5 intentos fallidos por 5 minutos
+- Bloqueo despuÃ©s de 5 intentos fallidos por 5 minutos
 
 **Cookies:**
-- Duración: 7 días
-- Sliding expiration: Sí
-- HttpOnly: Sí
+- DuraciÃ³n: 7 dÃ­as
+- Sliding expiration: SÃ­
+- HttpOnly: SÃ­
 - Secure: Solo HTTPS
 - SameSite: Lax
 
 ---
 
-## ?? PRUEBAS SUGERIDAS
+## ğŸ§ª PRUEBAS SUGERIDAS
 
-1. Registro con Email
-2. Login con Email
-3. Registro/Login con Google
-4. Recuperación de Contraseña
-5. Funcionalidades del Dashboard
+1. **Registro con Email**
+2. **Login con Email**
+3. **Registro/Login con Google**
+4. **Registro/Login con Microsoft**
+5. **RecuperaciÃ³n de ContraseÃ±a**
+6. **Funcionalidades del Dashboard**
+7. **AsociaciÃ³n de cuentas externas con usuarios existentes**
 
 ---
 
-## ??? DEBUGGING
+## ğŸ› DEBUGGING
 
 Logs de desarrollo:
 
@@ -202,29 +245,33 @@ Logs de desarrollo:
 }
 ```
 
-Problemas comunes:
-- Redirección de Google incorrecta: `https://localhost:7230/signin-google`
-- Base de datos no se crea: revisa cadena de conexión o permisos
-- Errores de compilación: `dotnet restore`
+**Problemas comunes:**
+- **Google**: RedirecciÃ³n incorrecta â†’ `https://localhost:7230/signin-google`
+- **Microsoft**: RedirecciÃ³n incorrecta â†’ `https://localhost:7230/signin-microsoft`
+- **Base de datos**: No se crea â†’ revisa cadena de conexiÃ³n o permisos
+- **CompilaciÃ³n**: Errores de dependencias â†’ `dotnet restore`
+- **OAuth**: Errores de configuraciÃ³n â†’ verifica Client ID y Client Secret
 
 ---
 
-## ?? SIGUIENTES PASOS
+## ğŸš€ SIGUIENTES PASOS
 
-- Confirmación por email
-- 2FA
+- ConfirmaciÃ³n por email
+- 2FA (Two-Factor Authentication)
 - Roles y permisos
-- Otros proveedores (Microsoft, Facebook)
-- API para móvil
-- Auditoría de sesiones
+- Otros proveedores (Facebook, GitHub, LinkedIn)
+- API para aplicaciones mÃ³viles
+- AuditorÃ­a de sesiones
+- Single Sign-On (SSO) empresarial
 
 ---
 
-## ?? SOPORTE
+## ğŸ“ SOPORTE
 
-1. Revisa los logs
-2. Verifica Google OAuth
-3. Asegura que la base de datos existe y es accesible
-4. Verifica paquetes NuGet estén instalados
+1. **Revisa los logs** en la consola de desarrollo
+2. **Verifica configuraciÃ³n OAuth** en Google Cloud Console y Azure Portal
+3. **AsegÃºrate** de que la base de datos existe y es accesible
+4. **Confirma** que todos los paquetes NuGet estÃ¡n instalados
+5. **Revisa las URLs de redirecciÃ³n** en ambos proveedores OAuth
 
-El sistema está completamente funcional y listo para usar en desarrollo. ¡Disfruta de tu nueva plataforma de autenticación!
+El sistema estÃ¡ completamente funcional con **mÃºltiples proveedores de autenticaciÃ³n** y listo para usar en desarrollo. Â¡Disfruta de tu nueva plataforma de autenticaciÃ³n con Google y Microsoft!

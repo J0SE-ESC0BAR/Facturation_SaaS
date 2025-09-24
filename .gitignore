@@ -48,3 +48,4 @@ secrets.json
 **/appsettings.Local.json
 **/appsettings.*.Local.json
 # Puedes commitear appsettings.json.example
+Valor APIs.txt
