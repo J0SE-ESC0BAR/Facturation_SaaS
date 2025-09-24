@@ -35,7 +35,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.User.RequireUniqueEmail = true;
 
     // Email confirmation
-    options.SignIn.RequireConfirmedEmail = false; // Cambiar a true en producción
+    options.SignIn.RequireConfirmedEmail = false; // Cambiar a true en producciï¿½n
     options.SignIn.RequireConfirmedPhoneNumber = false;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -52,6 +52,15 @@ builder.Services.AddAuthentication()
         // Add specific scopes
         options.Scope.Add("email");
         options.Scope.Add("profile");
+    })
+    .AddMicrosoftAccount(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]!;
+        options.SaveTokens = true;
+        
+        // Add specific scopes
+        options.Scope.Add("https://graph.microsoft.com/user.read");
     });
 
 // Configure cookie policy

@@ -1,6 +1,6 @@
 @model LoginViewModel
 @{
-    ViewData["Title"] = "Iniciar Sesión";
+    ViewData["Title"] = "Iniciar SesiÃ³n";
     Layout = "_Layout";
 }
 
@@ -10,8 +10,8 @@
             <div class="card shadow">
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <h2 class="h4">Iniciar Sesión</h2>
-                        <p class="text-muted">Accede a tu cuenta de facturación</p>
+                        <h2 class="h4">Iniciar SesiÃ³n</h2>
+                        <p class="text-muted">Accede a tu cuenta de facturaciÃ³n</p>
                     </div>
 
                     @if (TempData["Error"] != null)
@@ -40,7 +40,7 @@
 
                         <div class="mb-3">
                             <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" placeholder="Ingresa tu contraseña" />
+                            <input asp-for="Password" class="form-control" placeholder="Ingresa tu contraseÃ±a" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
@@ -52,13 +52,13 @@
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-sign-in-alt me-2"></i>
-                                Iniciar Sesión
+                                Iniciar SesiÃ³n
                             </button>
                         </div>
 
                         <div class="text-center mb-3">
                             <a asp-action="ForgotPassword" class="text-decoration-none">
-                                ¿Olvidaste tu contraseña?
+                                Â¿Olvidaste tu contraseÃ±a?
                             </a>
                         </div>
                     </form>
@@ -68,10 +68,21 @@
                     <!-- Login con Google -->
                     <form asp-action="GoogleLogin" method="post">
                         <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
-                        <div class="d-grid">
+                        <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-danger btn-lg">
                                 <i class="fab fa-google me-2"></i>
                                 Continuar con Google
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Login con Microsoft -->
+                    <form asp-action="MicrosoftLogin" method="post">
+                        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fab fa-microsoft me-2"></i>
+                                Continuar con Microsoft
                             </button>
                         </div>
                     </form>
@@ -88,9 +99,9 @@
 
                     <div class="text-center">
                         <small class="text-muted">
-                            Al iniciar sesión, aceptas nuestros 
-                            <a href="#" class="text-decoration-none">Términos de Servicio</a> y 
-                            <a href="#" class="text-decoration-none">Política de Privacidad</a>
+                            Al iniciar sesiÃ³n, aceptas nuestros 
+                            <a href="#" class="text-decoration-none">TÃ©rminos de Servicio</a> y 
+                            <a href="#" class="text-decoration-none">PolÃ­tica de Privacidad</a>
                         </small>
                     </div>
                 </div>
@@ -98,8 +109,8 @@
 
             <div class="text-center mt-4">
                 <p class="text-muted">
-                    ¿No tienes una cuenta? 
-                    <a asp-action="Register" class="text-decoration-none fw-bold">Regístrate aquí</a>
+                    Â¿No tienes una cuenta? 
+                    <a asp-action="Register" class="text-decoration-none fw-bold">RegÃ­strate aquÃ­</a>
                 </p>
             </div>
         </div>

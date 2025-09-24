@@ -11,7 +11,7 @@
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
                         <h2 class="h4">Crear Cuenta</h2>
-                        <p class="text-muted">Únete a nuestra plataforma de facturación</p>
+                        <p class="text-muted">Ãšnete a nuestra plataforma de facturaciÃ³n</p>
                     </div>
 
                     @if (!ViewData.ModelState.IsValid)
@@ -29,10 +29,21 @@
                     <!-- Registro con Google -->
                     <form asp-action="GoogleLogin" method="post">
                         <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
-                        <div class="d-grid mb-3">
+                        <div class="d-grid mb-2">
                             <button type="submit" class="btn btn-danger btn-lg">
                                 <i class="fab fa-google me-2"></i>
                                 Registrarse con Google
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Registro con Microsoft -->
+                    <form asp-action="MicrosoftLogin" method="post">
+                        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fab fa-microsoft me-2"></i>
+                                Registrarse con Microsoft
                             </button>
                         </div>
                     </form>
@@ -53,7 +64,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="LastName" class="form-label"></label>
-                                <input asp-for="LastName" class="form-control" placeholder="Pérez" />
+                                <input asp-for="LastName" class="form-control" placeholder="PÃ©rez" />
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
                         </div>
@@ -66,24 +77,24 @@
 
                         <div class="mb-3">
                             <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" placeholder="Mínimo 6 caracteres" />
+                            <input asp-for="Password" class="form-control" placeholder="MÃ­nimo 6 caracteres" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                             <div class="form-text">
-                                La contraseña debe tener al menos 6 caracteres, incluyendo mayúsculas, minúsculas y números.
+                                La contraseÃ±a debe tener al menos 6 caracteres, incluyendo mayÃºsculas, minÃ­sculas y nÃºmeros.
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirma tu contraseña" />
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirma tu contraseÃ±a" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3 form-check">
                             <input asp-for="AcceptTerms" class="form-check-input" />
                             <label asp-for="AcceptTerms" class="form-check-label">
-                                Acepto los <a href="#" class="text-decoration-none">Términos y Condiciones</a> 
-                                y la <a href="#" class="text-decoration-none">Política de Privacidad</a>
+                                Acepto los <a href="#" class="text-decoration-none">TÃ©rminos y Condiciones</a> 
+                                y la <a href="#" class="text-decoration-none">PolÃ­tica de Privacidad</a>
                             </label>
                             <span asp-validation-for="AcceptTerms" class="text-danger d-block"></span>
                         </div>
@@ -100,8 +111,8 @@
 
                     <div class="text-center">
                         <small class="text-muted">
-                            Al crear una cuenta, aceptas automáticamente nuestros términos de servicio 
-                            y política de privacidad.
+                            Al crear una cuenta, aceptas automÃ¡ticamente nuestros tÃ©rminos de servicio 
+                            y polÃ­tica de privacidad.
                         </small>
                     </div>
                 </div>
@@ -109,8 +120,8 @@
 
             <div class="text-center mt-4">
                 <p class="text-muted">
-                    ¿Ya tienes una cuenta? 
-                    <a asp-action="Login" class="text-decoration-none fw-bold">Inicia sesión aquí</a>
+                    Â¿Ya tienes una cuenta? 
+                    <a asp-action="Login" class="text-decoration-none fw-bold">Inicia sesiÃ³n aquÃ­</a>
                 </p>
             </div>
         </div>
@@ -121,7 +132,7 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     
     <script>
-        // Verificar fortaleza de la contraseña
+        // Verificar fortaleza de la contraseÃ±a
         document.getElementById('Password').addEventListener('input', function() {
             const password = this.value;
             const feedback = document.createElement('div');
@@ -140,11 +151,11 @@
             switch(strength) {
                 case 0:
                 case 1:
-                    feedback_text = 'Muy débil';
+                    feedback_text = 'Muy dÃ©bil';
                     feedback_class = 'text-danger';
                     break;
                 case 2:
-                    feedback_text = 'Débil';
+                    feedback_text = 'DÃ©bil';
                     feedback_class = 'text-warning';
                     break;
                 case 3:
