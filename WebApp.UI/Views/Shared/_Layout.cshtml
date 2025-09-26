@@ -3,37 +3,43 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Facturación SaaS</title>
+    <title>@ViewData["Title"] - FacturaPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebApp.UI.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="fas fa-file-invoice-dollar me-2"></i>
-                    Facturación SaaS
+    <header class="navbar-floating">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img class="me-2" src="~/Logo.png" alt="Logo" style="height: 32px; width: auto;" />
+                    <span class="text-gradient fs-4">FacturaPro</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav me-auto ms-4">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                            <a class="nav-link fw-medium" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#">Planes y Precios</a>
+                            <a class="nav-link fw-medium" href="#features">Características</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#">Contacto</a>
+                            <a class="nav-link fw-medium" asp-area="" asp-controller="Home" asp-action="Pricing">Precios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" asp-area="" asp-controller="Home" asp-action="Support">Soporte</a>
                         </li>
                     </ul>
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav ms-auto">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item dropdown">
@@ -58,14 +64,14 @@
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login">
-                                    <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+                            <li class="nav-item me-3">
+                                <a class="nav-link fw-medium navbar-login" asp-controller="Account" asp-action="Login">
+                                    Iniciar Sesión
                                 </a>
                             </li>
-                            <li class="nav-item ms-2">
-                                <a class="btn btn-primary text-white" asp-controller="Account" asp-action="Register">
-                                    <i class="fas fa-user-plus me-1"></i>Registrarse
+                            <li class="nav-item">
+                                <a class="btn btn-primary-custom px-4 py-2" asp-controller="Account" asp-action="Register">
+                                    Pruébalo Gratis
                                 </a>
                             </li>
                         }
@@ -80,6 +86,13 @@
     {
         @RenderBody()
     }
+    else if (ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && 
+             ViewContext.RouteData.Values["action"]?.ToString() == "Index")
+    {
+        <main role="main">
+            @RenderBody()
+        </main>
+    }
     else
     {
         <div class="container">
@@ -89,10 +102,31 @@
         </div>
     }
 
-    <footer class="border-top footer text-muted">
+    <footer class="bg-dark text-light py-4 mt-5">
         <div class="container">
-            &copy; @DateTime.Now.Year - Facturación SaaS - 
-            <a asp-area="" asp-controller="Home" asp-action="Privacy">Política de Privacidad</a>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="~/Logo.png" alt="Logo" style="height: 24px; width: auto;" class="me-2" />
+                        <span class="fw-bold">FacturaPro</span>
+                    </div>
+                    <p class="text-muted small">
+                        La plataforma SaaS más completa para gestionar tu facturación electrónica.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="mb-3">
+                        <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-light text-decoration-none me-3">
+                            Política de Privacidad
+                        </a>
+                        <a href="#" class="text-light text-decoration-none me-3">Términos de Servicio</a>
+                        <a href="#" class="text-light text-decoration-none">Contacto</a>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        &copy; @DateTime.Now.Year FacturaPro. Todos los derechos reservados.
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
     

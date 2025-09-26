@@ -2,31 +2,25 @@
     ViewData["Title"] = "Inicio";
 }
 
-<!-- Hero Section -->
-<section class="hero bg-primary text-white py-5 mb-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+<!-- Hero Section con imagen de fondo -->
+<section class="hero-with-image">
+    <div class="hero-overlay"></div>
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">
-                    Facturación Electrónica Simple y Eficiente
-                </h1>
-                <p class="lead mb-4">
-                    La plataforma SaaS más completa para gestionar tu facturación electrónica. 
-                    Crea, envía y administra tus facturas de forma automática y cumple con todos los requisitos fiscales.
-                </p>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg px-4 me-md-2">
-                        <i class="fas fa-rocket me-2"></i>
-                        Comenzar Gratis
-                    </a>
-                    <a href="#features" class="btn btn-outline-light btn-lg px-4">
-                        Conocer Más
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="text-center">
-                    <i class="fas fa-file-invoice-dollar" style="font-size: 12rem; opacity: 0.8;"></i>
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Simplifica tu facturación con Facturación SaaS
+                    </h1>
+                    <p class="hero-description">
+                        Facturación SaaS es la solución completa para gestionar tus facturas electrónicas de forma eficiente y sin complicaciones. 
+                        Ahorra tiempo y recursos con nuestra plataforma intuitiva y segura.
+                    </p>
+                    <div class="hero-actions">
+                        <a asp-controller="Account" asp-action="Register" class="btn-hero-primary">
+                            Empezar Gratis
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,138 +28,126 @@
 </section>
 
 <!-- Features Section -->
-<section id="features" class="py-5">
+<section class="features-modern-section">
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold">¿Por qué elegir nuestra plataforma?</h2>
-                <p class="lead text-muted">
-                    Diseñada para empresas de todos los tamaños que buscan automatizar su proceso de facturación
+                <h2 class="section-title">Características principales</h2>
+                <p class="section-description">
+                    Descubre cómo Facturación SaaS puede transformar tu proceso de facturación.
                 </p>
             </div>
         </div>
         
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-bolt text-warning" style="font-size: 3rem;"></i>
-                        </div>
-                        <h4>Facturación Rápida</h4>
-                        <p class="text-muted">
-                            Crea facturas en segundos con nuestro sistema intuitivo. 
-                            Plantillas personalizables y datos pre-llenados.
-                        </p>
+            <div class="col-lg-3 col-md-6">
+                <div class="modern-feature-card">
+                    <div class="feature-icon-modern">
+                        <i class="fas fa-file-invoice"></i>
                     </div>
+                    <h4 class="feature-title">Facturación ilimitada</h4>
+                    <p class="feature-description">
+                        Crea y envía facturas electrónicas ilimitadas sin preocuparte por límites.
+                    </p>
                 </div>
             </div>
             
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-shield-alt text-success" style="font-size: 3rem;"></i>
-                        </div>
-                        <h4>100% Legal</h4>
-                        <p class="text-muted">
-                            Cumple con todos los requisitos fiscales. 
-                            Integración automática con las autoridades tributarias.
-                        </p>
+            <div class="col-lg-3 col-md-6">
+                <div class="modern-feature-card">
+                    <div class="feature-icon-modern">
+                        <i class="fas fa-clock"></i>
                     </div>
+                    <h4 class="feature-title">Automatización</h4>
+                    <p class="feature-description">
+                        Automatiza tareas repetitivas como el envío de recordatorios de pago.
+                    </p>
                 </div>
             </div>
             
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-chart-line text-info" style="font-size: 3rem;"></i>
-                        </div>
-                        <h4>Reportes Avanzados</h4>
-                        <p class="text-muted">
-                            Analiza tu negocio con reportes detallados. 
-                            Exporta a Excel, PDF y otros formatos.
-                        </p>
+            <div class="col-lg-3 col-md-6">
+                <div class="modern-feature-card">
+                    <div class="feature-icon-modern">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
+                    <h4 class="feature-title">Seguridad y Cumplimiento</h4>
+                    <p class="feature-description">
+                        Cumplimos con todas las normativas para garantizar la seguridad de tus datos.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="modern-feature-card">
+                    <div class="feature-icon-modern">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4 class="feature-title">Gestión de Clientes</h4>
+                    <p class="feature-description">
+                        Organiza y gestiona la información de tus clientes en un solo lugar.
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Pricing Section -->
-<section class="py-5 bg-light">
+<!-- Testimonials Section -->
+<section class="testimonials-modern-section">
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold">Planes que se adaptan a tu negocio</h2>
-                <p class="lead text-muted">Comienza gratis y escala según tus necesidades</p>
+                <h2 class="section-title">Lo que dicen nuestros clientes</h2>
             </div>
         </div>
         
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-4 col-md-6">
-                <div class="card border-0 shadow">
-                    <div class="card-body p-4">
-                        <div class="text-center">
-                            <h3>Básico</h3>
-                            <div class="display-6 fw-bold text-primary">Gratis</div>
-                            <p class="text-muted">Para empezar</p>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="modern-testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar-modern">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-6tc7E6sWihsG3y0QU0_ed2yHTDrbMGqroqIF4p5TwWL5niwqEUhXvPi64fV8szgpBhietB7zXqOzr0N76H50dUc20yUazqnKWL5JAMvtMRDrk_bNaAdF4YwxIIjaAQIV9DOtcY3kQD2VXyiPArhCjOk2JLuVSiNntJQe9ewdEM0vP7qR0-x0Wocm2m8ucV8WkakeWhyAClQOEzPGe9v2vsT6Ij24OSHTJ9hZ0GNUDbls-Vs34nwK0tRoHXQtO-e_w3JKDyPMTg4" alt="Sofía Rodríguez" />
                         </div>
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Hasta 10 facturas/mes</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>1 empresa</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Soporte por email</li>
-                        </ul>
-                        <div class="d-grid">
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">Comenzar Gratis</a>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Sofía Rodríguez</div>
+                            <div class="testimonial-role">Dueña de tienda online</div>
                         </div>
+                    </div>
+                    <div class="testimonial-quote">
+                        "Facturación SaaS ha simplificado enormemente mi proceso de facturación. Ahora puedo dedicar más tiempo a mi negocio."
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4 col-md-6">
-                <div class="card border-0 shadow border-primary">
-                    <div class="badge bg-primary position-absolute top-0 start-50 translate-middle px-3 py-2">
-                        Más Popular
+            <div class="col-lg-4">
+                <div class="modern-testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar-modern">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150" alt="Carlos López" />
+                        </div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Carlos López</div>
+                            <div class="testimonial-role">Consultor independiente</div>
+                        </div>
                     </div>
-                    <div class="card-body p-4">
-                        <div class="text-center">
-                            <h3>Profesional</h3>
-                            <div class="display-6 fw-bold text-primary">$29<small class="fs-6 text-muted">/mes</small></div>
-                            <p class="text-muted">Para empresas en crecimiento</p>
-                        </div>
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Facturas ilimitadas</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>3 empresas</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>API acceso</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Soporte prioritario</li>
-                        </ul>
-                        <div class="d-grid">
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Elegir Plan</a>
-                        </div>
+                    <div class="testimonial-quote">
+                        "La automatización de procesos me ha ahorrado horas de trabajo cada mes. La plataforma es muy intuitiva y fácil de usar."
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4 col-md-6">
-                <div class="card border-0 shadow">
-                    <div class="card-body p-4">
-                        <div class="text-center">
-                            <h3>Corporativo</h3>
-                            <div class="display-6 fw-bold text-primary">$99<small class="fs-6 text-muted">/mes</small></div>
-                            <p class="text-muted">Para grandes empresas</p>
+            <div class="col-lg-4">
+                <div class="modern-testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar-modern">
+                            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150" alt="Ana García" />
                         </div>
-                        <ul class="list-unstyled">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Todo lo anterior</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Empresas ilimitadas</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Integraciones avanzadas</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Soporte 24/7</li>
-                        </ul>
-                        <div class="d-grid">
-                            <a href="#" class="btn btn-outline-primary">Contactar Ventas</a>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">Ana García</div>
+                            <div class="testimonial-role">Gerente de pequeña empresa</div>
                         </div>
+                    </div>
+                    <div class="testimonial-quote">
+                        "La seguridad y el cumplimiento normativo me dan la tranquilidad de saber que mis datos están protegidos."
                     </div>
                 </div>
             </div>
@@ -174,18 +156,19 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-primary text-white">
+<section class="cta-modern-section">
     <div class="container">
         <div class="row text-center">
             <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4">¿Listo para digitalizar tu facturación?</h2>
-                <p class="lead mb-4">
-                    Únete a miles de empresas que ya confían en nuestra plataforma para su facturación electrónica
-                </p>
-                <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg px-4">
-                    <i class="fas fa-rocket me-2"></i>
-                    Comenzar Ahora
-                </a>
+                <h2 class="cta-title">¡Empieza a facturar de forma inteligente hoy mismo!</h2>
+                <div class="cta-actions">
+                    <a asp-controller="Account" asp-action="Register" class="btn-cta-primary me-3">
+                        Pruébalo Gratis
+                    </a>
+                    <a asp-controller="Home" asp-action="Pricing" class="btn-cta-secondary">
+                        Ver Precios
+                    </a>
+                </div>
             </div>
         </div>
     </div>
