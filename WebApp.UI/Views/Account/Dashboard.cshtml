@@ -8,6 +8,10 @@
         <!-- Sidebar -->
         <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
             <div class="position-sticky pt-3">
+                <a class="navbar-brand fw-bold d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img class="me-2" src="~/Logo.png" alt="Logo" style="height: 32px; width: auto;" />
+                    <span class="text-gradient fs-4">Facturación SaaS</span>
+                </a>
                 <div class="text-center mb-4">
                     @if (!string.IsNullOrEmpty(User.FindFirst("picture")?.Value))
                     {
