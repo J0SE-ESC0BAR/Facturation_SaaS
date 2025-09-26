@@ -180,20 +180,8 @@ body {
   font-size: 1.25rem;
   font-weight: 700;
   text-decoration: none;
-  transition: transform 0.2s ease;
 }
 
-.navbar-brand:hover {
-  transform: scale(1.02);
-}
-
-.navbar-brand img {
-  transition: transform 0.2s ease;
-}
-
-.navbar-brand:hover img {
-  transform: rotate(5deg);
-}
 
 /* Hero Section with Image */
 .hero-with-image {

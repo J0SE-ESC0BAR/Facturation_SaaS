@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FacturaPro</title>
+    <title>@ViewData["Title"] - Facturación SaaS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
             <div class="container">
                 <a class="navbar-brand fw-bold d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
                     <img class="me-2" src="~/Logo.png" alt="Logo" style="height: 32px; width: auto;" />
-                    <span class="text-gradient fs-4">FacturaPro</span>
+                    <span class="text-gradient fs-4">Facturación SaaS</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +30,7 @@
                             <a class="nav-link fw-medium" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-medium" href="#features">Características</a>
+                            <a class="nav-link fw-medium" asp-area="" asp-controller="Home" asp-action="Features">Características</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link fw-medium" asp-area="" asp-controller="Home" asp-action="Pricing">Precios</a>
@@ -71,7 +71,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="btn btn-primary-custom px-4 py-2" asp-controller="Account" asp-action="Register">
-                                    Pruébalo Gratis
+                                    Registrar
                                 </a>
                             </li>
                         }
@@ -108,7 +108,7 @@
                 <div class="col-md-6">
                     <div class="d-flex align-items-center mb-3">
                         <img src="~/Logo.png" alt="Logo" style="height: 24px; width: auto;" class="me-2" />
-                        <span class="fw-bold">FacturaPro</span>
+                        <span class="fw-bold">Facturación SaaS</span>
                     </div>
                     <p class="text-muted small">
                         La plataforma SaaS más completa para gestionar tu facturación electrónica.
@@ -123,13 +123,12 @@
                         <a href="#" class="text-light text-decoration-none">Contacto</a>
                     </div>
                     <p class="text-muted small mb-0">
-                        &copy; @DateTime.Now.Year FacturaPro. Todos los derechos reservados.
+                        &copy; @DateTime.Now.Year Facturación SaaS. Todos los derechos reservados.
                     </p>
                 </div>
             </div>
         </div>
     </footer>
-    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
