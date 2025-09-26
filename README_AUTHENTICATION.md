@@ -29,51 +29,90 @@ Este repo ignora `appsettings.json` y archivos locales para evitar subir secreto
 
 ---
 
-## ✅ IMPLEMENTACIÓN COMPLETADA
+## ✅ IMPLEMENTACIÓN COMPLETADA - ACTUALIZADO SEPTIEMBRE 2024
 
 ### Funcionalidades Implementadas
 
 - ✅ **Login con Email y Contraseña**
-- ✅ **Login con Google OAuth**
-- ✅ **Login con Microsoft OAuth**
+- ✅ **Login con Google OAuth** - Botón rojo "Continuar con Google"
+- ✅ **Login con Microsoft OAuth** - Botón azul "Continuar con Microsoft"
 - ✅ **Registro con Email y Contraseña**
 - ✅ **Registro con Google OAuth**
 - ✅ **Registro con Microsoft OAuth**
 - ✅ **Recuperación de Contraseña**
 - ✅ **Dashboard Personalizado**
 - ✅ **Integración con Entity Framework Identity**
-- ✅ **Base de datos automatizada**
+- ✅ **Sistema de Migraciones Apropiado** (Corregido Septiembre 2024)
+- ✅ **Base de datos con control de versiones**
+
+### 🚨 MEJORAS IMPLEMENTADAS (Septiembre 2024)
+
+**Problema Corregido:** Se eliminó la configuración híbrida problemática de `EnsureCreated()` + migraciones que causaba conflictos.
+
+**Nueva Configuración:**
+- ✅ **Solo migraciones** - Eliminada la configuración híbrida
+- ✅ **Aplicación automática en desarrollo** - Logs detallados
+- ✅ **Configuración segura para producción** - Sin migraciones automáticas
+- ✅ **Control total de versiones** - Historial en `__EFMigrationsHistory`
 
 ---
 
-## 🚀 PASOS PARA USAR EL SISTEMA
+## 🚀 CONFIGURACIÓN INICIAL DEL PROYECTO
 
-### 1. Configurar OAuth Providers
+### 1. Configurar la Base de Datos (OBLIGATORIO)
 
-#### Google OAuth (Si aún no está configurado)
+**La aplicación usa migraciones apropiadas - NO crear tablas manualmente**
+
+```bash
+cd WebApp.UI
+
+# Verificar migraciones pendientes
+dotnet ef migrations list
+
+# Aplicar migraciones (primera vez)
+dotnet ef database update
+
+# En desarrollo, las migraciones se aplican automáticamente
+```
+
+**Estructura creada automáticamente:**
+- ✅ `AspNetUsers` - Con campos personalizados (FirstName, LastName, GoogleId, etc.)
+- ✅ `AspNetUserLogins` - Para OAuth (Google, Microsoft)
+- ✅ `AspNetRoles`, `AspNetUserClaims`, etc.
+- ✅ `__EFMigrationsHistory` - Control de versiones
+
+### 2. Configurar OAuth Providers
+
+#### Google OAuth
 1. **Ve a Google Cloud Console**: https://console.cloud.google.com/
 2. **Selecciona tu proyecto**: Facturación SaaS
 3. **Ve a APIs y servicios > Credenciales**
-4. **Edita tu ID de cliente OAuth**
-5. **Configura la URL de redirección**: `https://localhost:7230/signin-google`
-6. **Guarda los cambios**
+4. **Configura la URL de redirección**: `https://localhost:7230/signin-google`
+5. **Obtén ClientId y ClientSecret**
 
 #### Microsoft OAuth
 1. **Ve a Azure Portal**: https://portal.azure.com/
 2. **Ve a Microsoft Entra ID > Registros de aplicaciones**
-3. **Selecciona tu aplicación** o crea una nueva
-4. **Configura la URL de redirección**: `https://localhost:7230/signin-microsoft`
-5. **Obtén el Client ID y Client Secret**
-6. **Guarda los cambios**
+3. **Configura la URL de redirección**: `https://localhost:7230/signin-microsoft`
+4. **Obtén ClientId y ClientSecret**
 
-### 2. Ejecutar la Aplicación
+### 3. Ejecutar la Aplicación
 
 ```bash
 cd WebApp.UI
 dotnet run
 ```
 
-### 3. URLs Disponibles
+**Logs esperados:**
+```
+Development environment: Checking for pending migrations...
+Database is up to date, no pending migrations found
+Environment: Development. SQL Server: SERVIDOR; Database: FacturacionSaaS
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://localhost:7230
+```
+
+### 4. URLs Disponibles
 
 - **Página Principal**: https://localhost:7230/
 - **Login**: https://localhost:7230/Account/Login
@@ -88,80 +127,140 @@ dotnet run
 ### 🔐 Login (https://localhost:7230/Account/Login)
 
 **Opciones disponibles:**
-- **Email y Contraseña**: Los usuarios registrados pueden iniciar sesión con sus credenciales
-- **Google OAuth**: Botón "Continuar con Google" para autenticación externa
-- **Microsoft OAuth**: Botón "Continuar con Microsoft" para autenticación externa
-- **Recordarme**: Checkbox para mantener la sesión activa
+- **Email y Contraseña**: Para usuarios registrados localmente
+- **Google OAuth**: Botón rojo "Continuar con Google" 
+- **Microsoft OAuth**: Botón azul "Continuar con Microsoft"
+- **Recordarme**: Mantener sesión activa por 7 días
 - **¿Olvidaste tu contraseña?**: Enlace para recuperación
+
+**Flujo de autenticación externa:**
+1. Usuario hace clic en provider externo (Google/Microsoft)
+2. Redirección al proveedor para autenticación
+3. Usuario autoriza la aplicación
+4. Callback automático a `/signin-google` o `/signin-microsoft`
+5. Sistema verifica si existe usuario con ese email:
+   - **Si existe**: Asocia cuenta externa al usuario existente
+   - **Si no existe**: Crea nuevo usuario automáticamente
+6. Redirección al Dashboard
 
 ### 📝 Registro (https://localhost:7230/Account/Register)
 
 **Opciones disponibles:**
-- **Registro con Google**: Botón para registrarse usando cuenta de Google
-- **Registro con Microsoft**: Botón para registrarse usando cuenta de Microsoft
+- **Registro con Google**: Botón rojo en la parte superior
+- **Registro con Microsoft**: Botón azul en la parte superior
 - **Registro con Email**: Formulario completo con:
   - Nombre y Apellido
-  - Correo electrónico
-  - Contraseña (con validación de fortaleza)
+  - Correo electrónico (único en el sistema)
+  - Contraseña con validación de fortaleza en tiempo real
   - Confirmación de contraseña
-  - Checkbox de términos y condiciones
+  - Checkbox de términos y condiciones (obligatorio)
 
 **Validaciones implementadas:**
-- Email único en el sistema
-- Contraseña mínimo 6 caracteres con mayúsculas, minúsculas y números
-- Confirmación de contraseña debe coincidir
-- Aceptación obligatoria de términos
+- ✅ Email único en el sistema
+- ✅ Contraseña mínimo 6 caracteres con mayúsculas, minúsculas y números
+- ✅ Validación de fortaleza con indicador visual
+- ✅ Confirmación de contraseña debe coincidir
+- ✅ Aceptación obligatoria de términos
 
 ### 📊 Dashboard (https://localhost:7230/Account/Dashboard)
 
 **Características:**
-- **Información del usuario**: Muestra datos del usuario autenticado
-- **Foto de perfil**: Si se registró con Google, muestra la foto
-- **Proveedor de autenticación**: Badge indicando si usó email, Google o Microsoft
-- **Sidebar de navegación**: Enlaces a futuras funcionalidades
-- **KPIs simulados**: Tarjetas con métricas de ejemplo
-- **Tabla de facturas**: Datos de ejemplo para demostración
+- **Información del usuario**: Datos completos del usuario autenticado
+- **Foto de perfil**: Si se registró con Google
+- **Proveedor de autenticación**: Badge indicando método usado (Email/Google/Microsoft)
+- **Sidebar de navegación**: Enlaces organizados por categorías
+- **KPIs simulados**: Métricas de demostración
+- **Tabla de facturas**: Datos de ejemplo para la demo
 
 ### 🔑 Recuperación de Contraseña
 
-**Flujo implementado:**
-1. Usuario ingresa su email
-2. Sistema genera token de recuperación
-3. Se muestra confirmación (en desarrollo, el token se logea en consola)
-4. Usuario recibe enlace para restablecer contraseña
+**Flujo completo:**
+1. Usuario ingresa su email en `/Account/ForgotPassword`
+2. Sistema genera token seguro de recuperación
+3. Confirmación mostrada al usuario
+4. En desarrollo: Token se registra en logs para pruebas
+5. Usuario podrá usar el enlace para restablecer contraseña
 
 ---
 
-## 🗄️ BASE DE DATOS
+## 🗄️ BASE DE DATOS - MIGRACIONES APROPIADAS
 
-### Configuración Automática
+### Nueva Configuración (Septiembre 2024)
 
-La aplicación está configurada para crear automáticamente la base de datos en desarrollo:
+**✅ Eliminada configuración híbrida problemática**
+- **Antes**: `EnsureCreated()` + migraciones (causaba conflictos)
+- **Ahora**: Solo migraciones con control total
 
-- **Proveedor**: SQL Server
-- **Creación automática**: Aplica migraciones si existen; si no, `EnsureCreated`
+### Configuración por Ambiente
 
-### Tablas Creadas por Identity
+**Desarrollo (`Program.cs`):**
+```csharp
+if (app.Environment.IsDevelopment())
+{
+    logger.LogInformation("Development environment: Checking for pending migrations...");
+    
+    var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+    if (pendingMigrations.Any())
+    {
+        logger.LogInformation("Applying {Count} pending migrations", pendingMigrations.Count());
+        await context.Database.MigrateAsync();
+        logger.LogInformation("All migrations applied successfully");
+    }
+    else
+    {
+        logger.LogInformation("Database is up to date, no pending migrations found");
+    }
+}
+else
+{
+    logger.LogInformation("Production environment: Migrations should be applied manually");
+}
+```
 
-- `AspNetUsers` - Usuarios del sistema
-- `AspNetRoles` - Roles (si se implementan en el futuro)
-- `AspNetUserClaims` - Claims de usuarios
-- `AspNetUserLogins` - Logins externos (Google, Microsoft, etc.)
-- `AspNetUserTokens` - Tokens de seguridad
-- Y otras tablas auxiliares de Identity
+**Producción:**
+- ❌ Sin migraciones automáticas (seguridad)
+- ✅ Scripts SQL manuales
+- ✅ Control total sobre cambios en BD
+
+### Comandos de Migraciones
+
+**Crear nueva migración:**
+```bash
+cd WebApp.UI
+dotnet ef migrations add NombreMigracion
+```
+
+**Aplicar migraciones:**
+```bash
+# Desarrollo (automático al ejecutar)
+dotnet run
+
+# Manual
+dotnet ef database update
+```
+
+**Para producción (generar script):**
+```bash
+dotnet ef migrations script --output migration-script.sql
+```
+
+**Ver historial:**
+```bash
+dotnet ef migrations list
+```
 
 ### Campos Personalizados en ApplicationUser
 
 ```csharp
 public class ApplicationUser : IdentityUser
 {
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? LastLoginAt { get; set; }
-    public bool IsActive { get; set; }
-    public string? GoogleId { get; set; }
-    public string? ProfilePictureUrl { get; set; }
+    public string? FirstName { get; set; }           // Nombre
+    public string? LastName { get; set; }            // Apellido  
+    public DateTime CreatedAt { get; set; }          // Fecha registro
+    public DateTime? LastLoginAt { get; set; }       // Último login
+    public bool IsActive { get; set; }               // Usuario activo
+    public string? GoogleId { get; set; }            // ID de Google
+    public string? ProfilePictureUrl { get; set; }   // Foto de perfil
     public string FullName => $"{FirstName} {LastName}".Trim();
 }
 ```
@@ -210,68 +309,185 @@ builder.Services.AddAuthentication()
 - No requiere caracteres especiales
 - Bloqueo después de 5 intentos fallidos por 5 minutos
 
-**Cookies:**
+**Cookies de Autenticación:**
 - Duración: 7 días
-- Sliding expiration: Sí
-- HttpOnly: Sí
+- Sliding expiration: Sí (se renueva con actividad)
+- HttpOnly: Sí (no accesible desde JavaScript)
 - Secure: Solo HTTPS
 - SameSite: Lax
 
----
-
-## 🧪 PRUEBAS SUGERIDAS
-
-1. **Registro con Email**
-2. **Login con Email**
-3. **Registro/Login con Google**
-4. **Registro/Login con Microsoft**
-5. **Recuperación de Contraseña**
-6. **Funcionalidades del Dashboard**
-7. **Asociación de cuentas externas con usuarios existentes**
+**URLs de Callback OAuth:**
+- Google: `https://localhost:7230/signin-google`
+- Microsoft: `https://localhost:7230/signin-microsoft`
 
 ---
 
-## 🐛 DEBUGGING
+## 🧪 PRUEBAS SISTEMÁTICAS
 
-Logs de desarrollo:
+### Lista de Pruebas Recomendadas
+
+1. **✅ Registro con Email** - Formulario completo con validaciones
+2. **✅ Login con Email** - Usuario registrado localmente  
+3. **✅ Registro/Login con Google** - Flujo OAuth completo
+4. **✅ Registro/Login con Microsoft** - Flujo OAuth completo
+5. **✅ Asociación de cuentas** - Email existente + OAuth nuevo
+6. **✅ Recuperación de Contraseña** - Token y flujo completo
+7. **✅ Dashboard** - Información personalizada por proveedor
+8. **✅ Validaciones** - Fortaleza de contraseña, emails únicos
+9. **✅ Migraciones** - Aplicación automática en desarrollo
+
+### Datos de Prueba
+
+**Usuario Local:**
+- Email: test@example.com
+- Password: Test123!
+
+**OAuth Providers:**
+- Cualquier cuenta de Google personal o empresarial
+- Cualquier cuenta de Microsoft (Outlook, Hotmail, Office 365)
+
+---
+
+## 🐛 DEBUGGING Y TROUBLESHOOTING
+
+### Logs de Desarrollo Habilitados
 
 ```json
 "Logging": {
   "LogLevel": {
     "Default": "Information",
     "Microsoft.AspNetCore.Authentication": "Debug",
-    "Microsoft.AspNetCore.Identity": "Debug"
+    "Microsoft.AspNetCore.Identity": "Debug",
+    "DatabaseMigration": "Information"
   }
 }
 ```
 
-**Problemas comunes:**
-- **Google**: Redirección incorrecta → `https://localhost:7230/signin-google`
-- **Microsoft**: Redirección incorrecta → `https://localhost:7230/signin-microsoft`
-- **Base de datos**: No se crea → revisa cadena de conexión o permisos
-- **Compilación**: Errores de dependencias → `dotnet restore`
-- **OAuth**: Errores de configuración → verifica Client ID y Client Secret
+### Problemas Comunes y Soluciones
+
+**🔥 OAuth - Errores de Redirección:**
+- **Google**: URL debe ser exacta `https://localhost:7230/signin-google`
+- **Microsoft**: URL debe ser exacta `https://localhost:7230/signin-microsoft`
+
+**🔥 Base de Datos:**
+```bash
+# Error: Tablas ya existen
+dotnet ef database drop --force
+dotnet ef database update
+
+# Error: Migraciones pendientes
+dotnet ef migrations list
+dotnet ef database update
+```
+
+**🔥 Certificados HTTPS:**
+```bash
+dotnet dev-certs https --trust
+# Reiniciar navegador después
+```
+
+**🔥 Dependencias:**
+```bash
+dotnet restore
+dotnet build
+```
+
+**🔥 Configuración:**
+- Verificar que `appsettings.json` exista y tenga las claves OAuth
+- Comprobar cadena de conexión a SQL Server
+- Confirmar que User Secrets estén configurados correctamente
+
+### Logs Esperados (Startup Exitoso)
+
+```
+Development environment: Checking for pending migrations...
+Database is up to date, no pending migrations found
+Environment: Development. SQL Server: SERVIDOR\INSTANCIA; Database: FacturacionSaaS
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://localhost:7230
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+```
 
 ---
 
-## 🚀 SIGUIENTES PASOS
+## 🚀 ARQUITECTURA Y SIGUIENTES PASOS
 
-- Confirmación por email
-- 2FA (Two-Factor Authentication)
-- Roles y permisos
-- Otros proveedores (Facebook, GitHub, LinkedIn)
-- API para aplicaciones móviles
-- Auditoría de sesiones
-- Single Sign-On (SSO) empresarial
+### Arquitectura Actual
+
+```
+┌─────────────────────────────────────┐
+│           WebApp.UI                 │
+│  ┌─────────────────────────────────┐│
+│  │     Authentication Layer        ││
+│  │  • ASP.NET Core Identity        ││
+│  │  • Google OAuth                 ││  
+│  │  • Microsoft OAuth              ││
+│  │  • JWT/Cookie Auth              ││
+│  └─────────────────────────────────┘│
+│  ┌─────────────────────────────────┐│
+│  │       Data Layer                ││
+│  │  • Entity Framework Core        ││
+│  │  • SQL Server                   ││
+│  │  • Migrations Control           ││
+│  └─────────────────────────────────┘│
+└─────────────────────────────────────┘
+```
+
+### Próximas Funcionalidades
+
+**Autenticación Avanzada:**
+- [ ] Confirmación por email
+- [ ] 2FA (Two-Factor Authentication) 
+- [ ] Roles y permisos granulares
+- [ ] Otros proveedores (Facebook, GitHub, LinkedIn)
+- [ ] Single Sign-On (SSO) empresarial
+
+**Funcionalidades de Negocio:**
+- [ ] Gestión de Empresas
+- [ ] Sistema de Facturación
+- [ ] Reportes y Analytics
+- [ ] API REST para móviles
+- [ ] Integración con sistemas de pago
+
+**Infraestructura:**
+- [ ] Containerización con Docker
+- [ ] CI/CD con Azure DevOps
+- [ ] Monitoreo con Application Insights
+- [ ] Escalabilidad horizontal
 
 ---
 
-## 📞 SOPORTE
+## 📞 SOPORTE Y DOCUMENTACIÓN
 
-1. **Revisa los logs** en la consola de desarrollo
-2. **Verifica configuración OAuth** en Google Cloud Console y Azure Portal
-3. **Asegúrate** de que la base de datos existe y es accesible
-4. **Confirma** que todos los paquetes NuGet están instalados
-5. **Revisa las URLs de redirección** en ambos proveedores OAuth
+### Documentación Adicional
 
-El sistema está completamente funcional con **múltiples proveedores de autenticación** y listo para usar en desarrollo. ¡Disfruta de tu nueva plataforma de autenticación con Google y Microsoft!
+- **[GOOGLE_OAUTH_SETUP.md](./GOOGLE_OAUTH_SETUP.md)** - Configuración detallada de Google OAuth
+- **[MICROSOFT_OAUTH_SETUP.md](./MICROSOFT_OAUTH_SETUP.md)** - Configuración detallada de Microsoft OAuth
+
+### Lista de Verificación antes de Reportar Problemas
+
+1. **✅ Logs detallados** - Revisar consola de desarrollo
+2. **✅ URLs OAuth** - Verificar redirecciones en proveedores  
+3. **✅ Base de datos** - Confirmar que existe y es accesible
+4. **✅ Dependencias** - `dotnet restore` ejecutado
+5. **✅ Migraciones** - Estado actual con `dotnet ef migrations list`
+6. **✅ Certificados** - HTTPS válido y trusted
+7. **✅ Configuración** - ClientId/ClientSecret correctos
+
+### Estado del Proyecto - Septiembre 2024
+
+**✅ Sistema completamente funcional**
+- Autenticación multi-proveedor (Email, Google, Microsoft)
+- Base de datos con migraciones apropiadas
+- Dashboard personalizado por proveedor
+- Configuración de producción segura
+- Documentación completa actualizada
+
+**🎯 Listo para:**
+- Desarrollo de funcionalidades de negocio
+- Despliegue en entornos de staging/producción
+- Integración con equipos de desarrollo
+- Expansión de funcionalidades
+
+¡El sistema de autenticación está **completamente implementado y documentado** siguiendo las mejores prácticas de la industria!
