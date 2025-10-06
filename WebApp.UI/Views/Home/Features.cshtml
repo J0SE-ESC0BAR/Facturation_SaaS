@@ -1,3 +1,143 @@
 ﻿@{
     ViewData["Title"] = "Características";
 }
+
+<style>
+    /* Estilos para las imágenes decorativas */
+    .image-row {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .image-block {
+        text-align: center;
+        max-width: 300px;
+    }
+
+        .image-block img {
+            max-height: 180px;
+            width: auto;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.75rem;
+            transition: transform 0.3s ease;
+        }
+
+            .image-block img:hover {
+                transform: scale(1.05);
+            }
+
+    .image-title {
+        font-weight: 600;
+        font-size: 1.05rem;
+        color: #0d6efd;
+    }
+
+    /* Estilos para las tarjetas de características */
+    .feature-card {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 2rem 1.5rem;
+        box-shadow: 0 4px 12px rgb(13 110 253 / 0.15);
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+        background-color: #fff;
+        height: 100%;
+    }
+
+        .feature-card:hover {
+            box-shadow: 0 8px 24px rgb(13 110 253 / 0.3);
+            transform: translateY(-6px);
+        }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        margin-bottom: 1rem;
+    }
+
+    .feature-title {
+        font-weight: 700;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+        color: #0d6efd;
+        margin-bottom: 0.75rem;
+        letter-spacing: 1.2px;
+    }
+
+    .feature-desc {
+        font-size: 1rem;
+        color: #555;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- 🔷 Fila de imágenes decorativas -->
+    <div class="image-row">
+        <div class="image-block">
+            <img src="https://www.nordea.no/Images/152-522050/file_payments_nordea_corporate_640x360.png" alt="Facturación Electrónica" />
+        </div>
+        <div class="image-block">
+            <img src="https://sumsub.com/wp/wp-content/uploads/2024/07/no_payment_fraud_320224.png" alt="Automatización de procesos" />
+        </div>
+        <div class="image-block">
+            <img src="https://sysdatec.com/wp-content/uploads/elementor/thumbs/gstiondocumental-q0h20xwra0ta1kd0xl35mrjd881dcht0xe6504k08o.png" alt="Gestión documental" />
+        </div>
+    </div>
+
+    <!-- 🔹 Título de sección -->
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h2 class="fw-bold text-primary">Características del sistema de facturación electrónica</h2>
+        </div>
+    </div>
+
+    <!-- 🔸 Tarjetas de características -->
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card d-flex flex-column align-items-center text-center">
+                <i class="fas fa-infinity feature-icon"></i>
+                <div class="feature-title">Facturación ilimitada</div>
+                <div class="feature-desc">
+                    Emite todas las facturas que necesites sin límites mensuales ni costos adicionales por documento.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card d-flex flex-column align-items-center text-center">
+                <i class="fas fa-robot feature-icon"></i>
+                <div class="feature-title">Automatización</div>
+                <div class="feature-desc">
+                    Genera y envía facturas automáticamente al cliente, reduciendo el trabajo manual.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card d-flex flex-column align-items-center text-center">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <div class="feature-title">Seguridad y cumplimiento</div>
+                <div class="feature-desc">
+                    Cumple con todas las normativas fiscales vigentes y protege tu información con cifrado y acceso controlado.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="feature-card d-flex flex-column align-items-center text-center">
+                <i class="fas fa-users feature-icon"></i>
+                <div class="feature-title">Gestión de clientes</div>
+                <div class="feature-desc">
+                    Organiza, consulta y administra tu base de clientes de forma sencilla y rápida.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
