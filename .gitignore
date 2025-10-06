@@ -10,10 +10,10 @@
 *.userosscache
 *.sln.docstates
 
-Documentos Generales/
-Documentos de Sistema de Facturación/
-Documentos de Sistema de Transmisión DTE/
-DGII/
+#Documentos Generales/
+#Documentos de Sistema de Facturación/
+#Documentos de Sistema de Transmisión DTE/
+#DGII/
 
 # IDEs
 .idea/
