@@ -21,7 +21,7 @@ https://localhost:7230/signin-google
 
 2. **Corrige la URL de redirección**
    - Ve a "APIs y servicios" > "Credenciales"
-   - Haz clic en tu ID de cliente OAuth 2.0: `1028824944575-cp5le33gfavl0n8emino6c27hk6k1c4v.apps.googleusercontent.com`
+   - Haz clic en tu ID de cliente OAuth 2.0: `Numeros_ID_Cliente.apps.googleusercontent.com`
    - En "URIs de redireccionamiento autorizados", ELIMINA la URL actual
    - Agrega la nueva URL: `https://localhost:7230/signin-google`
    - Haz clic en "Guardar"
@@ -79,8 +79,8 @@ https://localhost:7230/signin-google
    {
      "Authentication": {
        "Google": {
-         "ClientId": "1028824944575-cp5le33gfavl0n8emino6c27hk6k1c4v.apps.googleusercontent.com",
-         "ClientSecret": "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"
+         "ClientId": "Numeros_ID_Cliente.apps.googleusercontent.com",
+         "ClientSecret": "Ejemplo-NumerosYLetrasClienteSecreto"
        }
      }
    }
