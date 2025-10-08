@@ -125,6 +125,12 @@
     .sidebar .nav-link.active {
         background-color: #007bff;
         color: white !important;
+        font-weight: bold; /* Añadir negrita */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Añadir sombra sutil */
+    }
+    
+    .sidebar.collapsed .nav-link.active i {
+        color: white !important; /* Asegura que el icono también sea blanco cuando está colapsado */
     }
 
     .sidebar.collapsed .nav-link span {
@@ -342,40 +348,63 @@
     </div>
 </nav>
 
-@section Scripts {
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const toggleButton = document.getElementById('toggleSidebar');
-            const toggleIcon = document.getElementById('toggleIcon');
-            
-            sidebar.classList.toggle('collapsed');
-            
-            if (sidebar.classList.contains('collapsed')) {
-                toggleIcon.classList.remove('fa-chevron-left');
-                toggleIcon.classList.add('fa-chevron-right');
-                toggleButton.style.left = '65px';
-            } else {
-                toggleIcon.classList.remove('fa-chevron-right');
-                toggleIcon.classList.add('fa-chevron-left');
-                toggleButton.style.left = '235px';
-            }
-            
-            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+<!-- Mover el script fuera de la sección -->
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleButton = document.getElementById('toggleSidebar');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        sidebar.classList.toggle('collapsed');
+        
+        if (sidebar.classList.contains('collapsed')) {
+            toggleIcon.classList.remove('fa-chevron-left');
+            toggleIcon.classList.add('fa-chevron-right');
+            toggleButton.style.left = '65px';
+        } else {
+            toggleIcon.classList.remove('fa-chevron-right');
+            toggleIcon.classList.add('fa-chevron-left');
+            toggleButton.style.left = '235px';
         }
         
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const toggleButton = document.getElementById('toggleSidebar');
-            const toggleIcon = document.getElementById('toggleIcon');
-            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-            
-            if (isCollapsed) {
-                sidebar.classList.add('collapsed');
-                toggleIcon.classList.remove('fa-chevron-left');
-                toggleIcon.classList.add('fa-chevron-right');
-                toggleButton.style.left = '65px';
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+    }
+    
+    // Función para actualizar el elemento activo basado en la URL actual
+    function updateActiveNavItem() {
+        const currentPath = window.location.pathname.toLowerCase();
+        const navLinks = document.querySelectorAll('.sidebar .nav-link');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href').toLowerCase();
+            if (currentPath === href || 
+                (currentPath.includes(href) && href !== '/')) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
             }
         });
-    </script>
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleButton = document.getElementById('toggleSidebar');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        
+        if (isCollapsed) {
+            sidebar.classList.add('collapsed');
+            toggleIcon.classList.remove('fa-chevron-left');
+            toggleIcon.classList.add('fa-chevron-right');
+            toggleButton.style.left = '65px';
+        }
+        
+        // Actualizar el elemento activo
+        updateActiveNavItem();
+    });
+</script>
+
+<!-- Puedes dejar vacía la sección Scripts o eliminarla si no la necesitas -->
+@section Scripts {
+    <!-- Ya no es necesario el código JavaScript aquí -->
 }
