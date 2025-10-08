@@ -1,0 +1,54 @@
+@* filepath: c:\Users\jose.escobar\Documents\Facturation_SaaS\WebApp.UI\Views\Settings\Index.cshtml *@
+@{
+    ViewData["Title"] = "Configuración";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-cog"></i> Configuración</h2>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="#profile" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                    <i class="fas fa-user"></i> Perfil
+                </a>
+                <a href="#company" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-building"></i> Empresa
+                </a>
+                <a href="#preferences" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-sliders-h"></i> Preferencias
+                </a>
+                <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-shield-alt"></i> Seguridad
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="profile">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Información del Perfil</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Contenido del perfil...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="company">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Información de la Empresa</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Datos de la empresa...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

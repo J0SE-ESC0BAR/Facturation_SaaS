@@ -1,0 +1,180 @@
+@model WebApp.UI.Models.DashboardStatsViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_LayoutDashboard";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Exportar</button>
+        </div>
+        <button type="button" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus me-1"></i>
+            Nueva Factura
+        </button>
+    </div>
+</div>
+
+<!-- User Info Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-circle me-2"></i>
+                    Información de la Cuenta
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nombre:</strong> @User.Identity?.Name</p>
+                        <p><strong>Email:</strong> @User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Proveedor de Autenticación:</strong> 
+                            @if (User.FindFirst("provider")?.Value == "Google")
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="fab fa-google me-1"></i>Google
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-envelope me-1"></i>Email
+                                </span>
+                            }
+                        </p>
+                        <p><strong>ID de Usuario:</strong> @User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Facturas Este Mes</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.MonthlyInvoices</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-invoice fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Ingresos Este Mes</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">$@Model.MonthlyRevenue.ToString("N2")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Facturas Pendientes</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingInvoices</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Clientes Activos</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ActiveClients</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Invoices Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Facturas Recientes</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var invoice in Model.RecentInvoices)
+                    {
+                        <tr>
+                            <td>@invoice.InvoiceNumber</td>
+                            <td>@invoice.ClientName</td>
+                            <td>@invoice.Date.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                @if (invoice.Status == "Pagada")
+                                {
+                                    <span class="badge bg-success">Pagada</span>
+                                }
+                                else if (invoice.Status == "Pendiente")
+                                {
+                                    <span class="badge bg-warning">Pendiente</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@invoice.Status</span>
+                                }
+                            </td>
+                            <td>$@invoice.Amount.ToString("N2")</td>
+                            <td>
+                                <a asp-controller="Invoices" asp-action="Details" asp-route-id="@invoice.Id" class="btn btn-sm btn-primary">Ver</a>
+                                <a asp-controller="Invoices" asp-action="DownloadPDF" asp-route-id="@invoice.Id" class="btn btn-sm btn-secondary">PDF</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

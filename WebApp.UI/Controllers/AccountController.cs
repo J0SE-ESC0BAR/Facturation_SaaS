@@ -449,7 +449,8 @@ namespace WebApp.UI.Controllers
             }
             else
             {
-                return RedirectToAction("Dashboard");
+                // Redirigir al DashboardController en lugar de vista local
+                return RedirectToAction("Index", "Dashboard");
             }
         }
 
