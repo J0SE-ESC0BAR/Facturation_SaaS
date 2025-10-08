@@ -1,0 +1,253 @@
+﻿/* ===== Soporte Técnico - Estilos Completos ===== */
+
+/* ===== Reset básico ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f9;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* ===== Contenedor principal ===== */
+.support-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 40px 20px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Header ===== */
+.support-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+    .support-header h1 {
+        font-size: 2.8rem;
+        color: #1e40af;
+        font-weight: 800;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+        .support-header h1::after {
+            content: '';
+            width: 80px;
+            height: 3px;
+            background: #1e40af;
+            display: block;
+            margin: 10px auto 0;
+            border-radius: 3px;
+        }
+
+    .support-header p {
+        font-size: 1.2rem;
+        color: #4b5563;
+    }
+
+/* ===== Separador ===== */
+hr {
+    border: none;
+    height: 3px;
+    width: 100px;
+    margin: 30px auto;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #1e40af, #3b82f6);
+}
+
+/* ===== Secciones principales ===== */
+.support-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: space-between;
+}
+
+/* ===== Tarjetas ===== */
+.support-section {
+    flex: 1;
+    min-width: 280px;
+    background: #f9fafb;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.7s ease forwards;
+}
+
+    .support-section:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    }
+
+    .support-section h2 {
+        font-size: 1.8rem;
+        color: #1e3a8a;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #1e40af;
+        display: inline-block;
+        padding-bottom: 5px;
+    }
+
+    .support-section p {
+        font-size: 1.1rem;
+        color: #374151;
+        line-height: 1.6;
+    }
+
+    .support-section a {
+        color: #1e40af;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .support-section a:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+
+/* ===== Formulario ===== */
+.support-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.support-form input,
+.support-form textarea {
+    padding: 12px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+    .support-form input:focus,
+    .support-form textarea:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 8px rgba(59,130,246,0.3);
+        outline: none;
+    }
+
+.support-form button {
+    padding: 12px 20px;
+    background: linear-gradient(45deg, #1e40af, #3b82f6);
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .support-form button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(59,130,246,0.4);
+    }
+
+/* ===== FAQ ===== */
+.faq-list {
+    list-style: none;
+    padding: 0;
+}
+
+    .faq-list li {
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        position: relative;
+        padding-left: 25px;
+        cursor: pointer;
+    }
+
+        .faq-list li::before {
+            content: "❓";
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+/* ===== Recursos ===== */
+.support-resources a {
+    display: block;
+    margin-bottom: 10px;
+    color: #1e40af;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .support-resources a:hover {
+        color: #3b82f6;
+    }
+
+/* ===== Testimonios ===== */
+.testimonial-card {
+    text-align: center;
+}
+
+    .testimonial-card img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        border: 3px solid #3b82f6;
+        transition: all 0.3s ease;
+    }
+
+        .testimonial-card img:hover {
+            transform: scale(1.05);
+        }
+
+    .testimonial-card p {
+        font-style: italic;
+        color: #4b5563;
+        margin-bottom: 5px;
+    }
+
+/* ===== Animaciones ===== */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+    .support-sections {
+        flex-direction: column;
+        gap: 25px;
+    }
+}
+
+@media (max-width: 576px) {
+    .support-header h1 {
+        font-size: 2rem;
+    }
+
+    .support-header p {
+        font-size: 1rem;
+    }
+
+    .support-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .support-section p,
+    .faq-list li {
+        font-size: 1rem;
+    }
+}
