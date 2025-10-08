@@ -1,29 +1,56 @@
 ﻿@{
-    ViewData["Title"] = "Soporte";
+    ViewData["Title"] = "Soporte Técnico";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Página de Soporte</h1>
-    <p>¿Necesitas ayuda? ¡Estamos aquí para servirte!</p>
+<link rel="stylesheet" href="~/css/soporte.css" />
+
+<div class="support-container">
+    <!-- Header -->
+    <header class="support-header">
+        <h1>Soporte Técnico</h1>
+        <p>Estamos aquí para ayudarte. Envía tus dudas o problemas y nuestro equipo te responderá lo antes posible.</p>
+    </header>
+
+    <hr />
+
+    <div class="support-sections">
+        <!-- Formulario de contacto -->
+        <section class="support-section support-contact">
+            <h2>Contáctanos</h2>
+
+            <form class="support-form" onsubmit="enviarCorreo(event)">
+                <input type="text" id="nombre" placeholder="Nombre" required />
+                <input type="email" id="email" placeholder="Correo electrónico" required />
+                <textarea id="mensaje" placeholder="Mensaje" rows="5" required></textarea>
+                <button type="submit">Enviar</button>
+            </form>
+        </section>
+
+        <!-- FAQ -->
+        <section class="support-section support-faq">
+            <h2>Preguntas Frecuentes</h2>
+            <ul class="faq-list">
+                <li>¿Cómo restablezco mi contraseña?</li>
+                <li>¿Dónde puedo ver el historial de soporte?</li>
+                <li>¿Cuánto tarda la respuesta?</li>
+            </ul>
+        </section>
+    </div>
 </div>
 
-<hr />
+<script>
+    function enviarCorreo(event) {
+        event.preventDefault(); // Evita recargar la página
 
-<div class="row">
-    <div class="col-md-6">
-        <h2>Información de Contacto</h2>
-        <p>
-            <strong>Email:</strong> <a href="mailto:soporte@facturapro.com">soporte@facturassaas.com</a><br>
-            <strong>Teléfono:</strong> +1 (555) 123-4567<br>
-            <strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 5:00 PM
-        </p>
-    </div>
-    <div class="col-md-6">
-        <h2>Preguntas Frecuentes (FAQ)</h2>
-        <ul>
-            <li><a href="#">¿Cómo creo mi primera factura?</a></li>
-            <li><a href="#">¿Cómo cancelo mi suscripción?</a></li>
-            <li><a href="#">¿Están seguros mis datos?</a></li>
-        </ul>
-    </div>
-</div>
+        const nombre = document.getElementById("nombre").value;
+        const email = document.getElementById("email").value;
+        const mensaje = document.getElementById("mensaje").value;
+
+        const destinatario = "contact@jaemsoftware.com";
+        const asunto = encodeURIComponent("Consulta desde soporte web");
+        const body = encodeURIComponent(`Nombre: ${nombre}\nCorreo: ${email}\nMensaje:\n${mensaje}`);
+
+        // Abre el cliente de correo del usuario
+        window.location.href = `mailto:${destinatario}?subject=${asunto}&body=${body}`;
+    }
+</script>

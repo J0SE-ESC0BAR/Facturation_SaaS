@@ -2,6 +2,246 @@
     ViewData["Title"] = "Precios y Planes";
 }
 
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f0f4ff, #ffffff);
+    }
+
+    /* Hero Section */
+    .pricing-hero-section {
+        text-align: center;
+        padding: 80px 20px;
+        background: url('https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+        position: relative;
+        color: #fff;
+    }
+
+        .pricing-hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1;
+        }
+
+        .pricing-hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+    .pricing-hero-title {
+        font-size: 2.8rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .pricing-hero-description {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+    }
+
+    .btn-cta-hero {
+        padding: 12px 30px;
+        background-color: #0d6efd;
+        color: #fff;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-cta-hero:hover {
+            background-color: #084298;
+        }
+
+    /* Pricing Cards */
+    .pricing-plan-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .pricing-plan-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .pricing-plan-card.featured {
+            border: 2px solid #0d6efd;
+        }
+
+    .plan-badge {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        background: #0d6efd;
+        color: #fff;
+        padding: 8px 15px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .plan-name {
+        font-size: 1.6rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .plan-price {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .price-period {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .plan-description {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        color: #666;
+    }
+
+    .plan-features ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+
+    .plan-features li {
+        margin-bottom: 10px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
+    .btn-plan {
+        display: inline-block;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-plan-basic {
+        background: #0dcaf0;
+        color: #fff;
+    }
+
+        .btn-plan-basic:hover {
+            background: #0aa3c7;
+        }
+
+    .btn-plan-professional {
+        background: #0d6efd;
+        color: #fff;
+    }
+
+        .btn-plan-professional:hover {
+            background: #084298;
+        }
+
+    .btn-plan-corporate {
+        background: #6c757d;
+        color: #fff;
+    }
+
+        .btn-plan-corporate:hover {
+            background: #495057;
+        }
+
+    /* Comparison Table */
+    .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .comparison-table .featured-column {
+            background: #0d6efd;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .comparison-table i {
+            font-size: 1rem;
+        }
+
+    .text-success {
+        color: #198754;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+
+    /* FAQ Accordion */
+    .pricing-faq-section .accordion-button::after {
+        font-family: "Font Awesome 5 Free";
+        content: "\f107"; /* fa-chevron-down */
+        font-weight: 900;
+    }
+
+    .pricing-faq-section .accordion-button.collapsed::after {
+        content: "\f105"; /* fa-chevron-right */
+    }
+
+    .accordion-body {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    @media (max-width: 768px) {
+        .pricing-hero-title
+
+    {
+        font-size: 2rem;
+    }
+
+    .pricing-hero-description {
+        font-size: 1rem;
+    }
+
+    .plan-name {
+        font-size: 1.4rem;
+    }
+
+    .plan-price {
+        font-size: 1.6rem;
+    }
+
+    }
+</style>
+
 <!-- Pricing Hero Section -->
 <section class="pricing-hero-section">
     <div class="container">
@@ -9,16 +249,17 @@
             <div class="col-lg-8 mx-auto">
                 <h1 class="pricing-hero-title">Elige el plan perfecto para tu negocio</h1>
                 <p class="pricing-hero-description">
-                    Nuestros planes están diseñados para adaptarse a las necesidades de empresas de 
+                    Nuestros planes están diseñados para adaptarse a las necesidades de empresas de
                     todos los tamaños. Compara las características y precios para encontrar la opción ideal.
                 </p>
+                <a asp-controller="Account" asp-action="Register" class="btn-cta-hero">Comenzar Ahora</a>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Pricing Cards Section -->
-<section class="pricing-cards-section">
+<section class="pricing-cards-section py-5">
     <div class="container">
         <div class="row g-4 justify-content-center">
             <!-- Plan Básico -->
@@ -32,16 +273,14 @@
                         </div>
                         <p class="plan-description">Ideal para freelancers y pequeñas empresas que recién comienzan.</p>
                     </div>
-                    
                     <div class="plan-features">
                         <ul class="features-list">
-                            <li><i class="fas fa-check-circle"></i>Hasta 100 facturas al mes</li>
-                            <li><i class="fas fa-check-circle"></i>Soporte por correo electrónico</li>
-                            <li><i class="fas fa-check-circle"></i>Panel de control básico</li>
-                            <li><i class="fas fa-check-circle"></i>Informes mensuales</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Hasta 100 facturas al mes</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Soporte por correo electrónico</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Panel de control básico</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Informes mensuales</li>
                         </ul>
                     </div>
-                    
                     <div class="plan-action">
                         <a asp-controller="Account" asp-action="Register" class="btn-plan btn-plan-basic">
                             Seleccionar plan
@@ -62,17 +301,15 @@
                         </div>
                         <p class="plan-description">Perfecto para negocios en crecimiento que necesitan más potencia.</p>
                     </div>
-                    
                     <div class="plan-features">
                         <ul class="features-list">
-                            <li><i class="fas fa-check-circle"></i>Facturas ilimitadas</li>
-                            <li><i class="fas fa-check-circle"></i>Soporte prioritario</li>
-                            <li><i class="fas fa-check-circle"></i>Panel de control avanzado</li>
-                            <li><i class="fas fa-check-circle"></i>Informes personalizados</li>
-                            <li><i class="fas fa-check-circle"></i>Integraciones con otras herramientas</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Facturas ilimitadas</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Soporte prioritario</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Panel de control avanzado</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Informes personalizados</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Integraciones con otras herramientas</li>
                         </ul>
                     </div>
-                    
                     <div class="plan-action">
                         <a asp-controller="Account" asp-action="Register" class="btn-plan btn-plan-professional">
                             Seleccionar plan
@@ -92,20 +329,18 @@
                         </div>
                         <p class="plan-description">Soluciones a medida para grandes empresas y corporaciones.</p>
                     </div>
-                    
                     <div class="plan-features">
                         <ul class="features-list">
-                            <li><i class="fas fa-check-circle"></i>Todo lo del plan Profesional, y además:</li>
-                            <li><i class="fas fa-check-circle"></i>Soporte dedicado</li>
-                            <li><i class="fas fa-check-circle"></i>Panel de control empresarial</li>
-                            <li><i class="fas fa-check-circle"></i>Informes avanzados</li>
-                            <li><i class="fas fa-check-circle"></i>Integraciones personalizadas</li>
-                            <li><i class="fas fa-check-circle"></i>Acceso a API</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Todo lo del plan Profesional, y además:</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Soporte dedicado</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Panel de control empresarial</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Informes avanzados</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Integraciones personalizadas</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Acceso a API</li>
                         </ul>
                     </div>
-                    
                     <div class="plan-action">
-                        <a href="#" class="btn-plan btn-plan-corporate">
+                        <a asp-controller="Account" asp-action="Register" class="btn-plan btn-plan-corporate">
                             Seleccionar plan
                         </a>
                     </div>
@@ -116,79 +351,43 @@
 </section>
 
 <!-- Pricing Comparison Table -->
-<section class="pricing-comparison-section">
+<section class="pricing-comparison-section py-5">
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
                 <h2 class="comparison-title">Comparación detallada de planes</h2>
-                <p class="comparison-description">
-                    Analiza cada característica para tomar la mejor decisión para tu empresa.
-                </p>
+                <p class="comparison-description">Analiza cada característica para tomar la mejor decisión para tu empresa.</p>
             </div>
         </div>
-        
-        <div class="comparison-table-container">
-            <div class="table-responsive">
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th class="feature-column">Característica</th>
-                            <th class="plan-column">Básico</th>
-                            <th class="plan-column featured-column">Profesional</th>
-                            <th class="plan-column">Corporativo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="feature-name">Número de facturas</td>
-                            <td>Hasta 100</td>
-                            <td>Ilimitadas</td>
-                            <td>Ilimitadas</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Soporte</td>
-                            <td>Correo electrónico</td>
-                            <td>Prioritario</td>
-                            <td>Dedicado</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Panel de control</td>
-                            <td>Básico</td>
-                            <td>Avanzado</td>
-                            <td>Empresarial</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Informes</td>
-                            <td>Mensuales</td>
-                            <td>Personalizados</td>
-                            <td>Avanzados</td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Integraciones</td>
-                            <td><i class="fas fa-times text-danger"></i></td>
-                            <td><i class="fas fa-check text-success"></i></td>
-                            <td><i class="fas fa-check text-success"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="feature-name">Acceso a API</td>
-                            <td><i class="fas fa-times text-danger"></i></td>
-                            <td><i class="fas fa-times text-danger"></i></td>
-                            <td><i class="fas fa-check text-success"></i></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-responsive">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th class="feature-column">Característica</th>
+                        <th class="plan-column">Básico</th>
+                        <th class="plan-column featured-column">Profesional</th>
+                        <th class="plan-column">Corporativo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Número de facturas</td><td>Hasta 100</td><td>Ilimitadas</td><td>Ilimitadas</td></tr>
+                    <tr><td>Soporte</td><td>Correo electrónico</td><td>Prioritario</td><td>Dedicado</td></tr>
+                    <tr><td>Panel de control</td><td>Básico</td><td>Avanzado</td><td>Empresarial</td></tr>
+                    <tr><td>Informes</td><td>Mensuales</td><td>Personalizados</td><td>Avanzados</td></tr>
+                    <tr><td>Integraciones</td><td><i class="fas fa-times text-danger"></i></td><td><i class="fas fa-check text-success"></i></td><td><i class="fas fa-check text-success"></i></td></tr>
+                    <tr><td>Acceso a API</td><td><i class="fas fa-times text-danger"></i></td><td><i class="fas fa-times text-danger"></i></td><td><i class="fas fa-check text-success"></i></td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </section>
 
 <!-- FAQ Section -->
-<section class="pricing-faq-section">
+<section class="pricing-faq-section py-5">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <h2 class="faq-title text-center mb-5">Preguntas frecuentes</h2>
-                
                 <div class="accordion" id="pricingFAQ">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingOne">
@@ -202,7 +401,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingTwo">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
@@ -215,7 +413,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingThree">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
@@ -233,3 +430,4 @@
         </div>
     </div>
 </section>
+++
