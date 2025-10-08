@@ -2,26 +2,73 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApp.UI.Data;
 using WebApp.UI.Models;
-using System.Data.Common;
-using Serilog;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount; // ⬅️ AGREGAR ESTE USING
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File("logs/webapp-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-builder.Host.UseSerilog();
-
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+})
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// ⚠️ IMPORTANTE: Configurar autenticación ANTES de AddControllersWithViews
+builder.Services.AddAuthentication()
+    .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] 
+            ?? throw new InvalidOperationException("Google ClientId not configured");
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] 
+            ?? throw new InvalidOperationException("Google ClientSecret not configured");
+        
+        options.SaveTokens = true;
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
+        
+        options.CallbackPath = "/signin-google";
+    })
+    // ✅ AGREGAR MICROSOFT AUTHENTICATION
+    .AddMicrosoftAccount(MicrosoftAccountDefaults.AuthenticationScheme, options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] 
+            ?? throw new InvalidOperationException("Microsoft ClientId not configured");
+        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] 
+            ?? throw new InvalidOperationException("Microsoft ClientSecret not configured");
+        
+        options.SaveTokens = true;
+        
+        // Configurar callback path (debe coincidir con Azure AD)
+        options.CallbackPath = "/signin-microsoft";
+    });
+
 builder.Services.AddControllersWithViews();
 
-// Configure Response Compression
+// **AGREGAR HttpClient Factory**
+builder.Services.AddHttpClient();
+
+// Configurar named client para la API
+builder.Services.AddHttpClient("API", client =>
+{
+    var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001";
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+// Configuración de compresión de respuestas
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
@@ -29,176 +76,90 @@ builder.Services.AddResponseCompression(options =>
     options.Providers.Add<GzipCompressionProvider>();
 });
 
-// Configure Entity Framework
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Configure Identity
-builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
 {
-    // Password settings
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
 
-    // Lockout settings
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
 
-    // User settings
-    options.User.AllowedUserNameCharacters =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
-
-    // Email confirmation
-    options.SignIn.RequireConfirmedEmail = false; // Cambiar a true en producción
-    options.SignIn.RequireConfirmedPhoneNumber = false;
-})
-.AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
-
-// Configure external authentication
-builder.Services.AddAuthentication()
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-        options.SaveTokens = true;
-        
-        // Add specific scopes
-        options.Scope.Add("email");
-        options.Scope.Add("profile");
-    })
-    .AddMicrosoftAccount(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]!;
-        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]!;
-        options.SaveTokens = true;
-        
-        // Add specific scopes
-        options.Scope.Add("https://graph.microsoft.com/user.read");
-    });
-
-// Configure cookie policy
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.AccessDeniedPath = "/Error/AccessDenied"; // ⬅️ CAMBIAR AQUÍ
+    options.ExpireTimeSpan = TimeSpan.FromDays(14);
     options.SlidingExpiration = true;
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Lax;
-});
-
-// Configure security headers
-builder.Services.AddAntiforgery(options =>
-{
-    options.HeaderName = "X-XSRF-TOKEN";
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 var app = builder.Build();
 
-// Log DB connection in startup (sin exponer credenciales)
-using (var scope = app.Services.CreateScope())
-{
-    var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-    var env = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    var cs = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
-
-    var csb = new DbConnectionStringBuilder { ConnectionString = cs };
-    string server = TryGet(csb, "Data Source") ?? TryGet(csb, "Server") ?? "?";
-    string database = TryGet(csb, "Initial Catalog") ?? TryGet(csb, "Database") ?? "?";
-
-    logger.LogInformation("Environment: {EnvName}. SQL Server: {Server}; Database: {Database}", env.EnvironmentName, server, database);
-
-    static string? TryGet(DbConnectionStringBuilder b, string key)
-        => b.TryGetValue(key, out var value) ? value?.ToString() : null;
-}
-
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-else
-{
-    app.UseDeveloperExceptionPage();
-}
-
-// Security headers middleware
-app.Use(async (context, next) =>
-{
-    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
-    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
-    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
-    await next();
-});
 
 app.UseHttpsRedirection();
-app.UseResponseCompression();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseResponseCompression();
+
+// ⚠️ ORDEN CORRECTO: Authentication ANTES de Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+app.MapRazorPages();
 
-// Apply migrations properly (development only)
+// Crear roles por defecto
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    
-    if (app.Environment.IsDevelopment())
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    string[] roleNames = { "Admin", "Facturador", "Contador" };
+    foreach (var roleName in roleNames)
     {
-        logger.LogInformation("Development environment: Checking for pending migrations...");
-        
-        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-        if (pendingMigrations.Any())
+        if (!await roleManager.RoleExistsAsync(roleName))
         {
-            logger.LogInformation("Applying {Count} pending migrations: {Migrations}", 
-                pendingMigrations.Count(), 
-                string.Join(", ", pendingMigrations));
-            
-            await context.Database.MigrateAsync();
-            logger.LogInformation("All migrations applied successfully");
-        }
-        else
-        {
-            logger.LogInformation("Database is up to date, no pending migrations found");
+            await roleManager.CreateAsync(new IdentityRole(roleName));
         }
     }
-    else
+
+    var adminEmail = "admin@facturacion.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    
+    if (adminUser == null)
     {
-        logger.LogInformation("Production environment: Migrations should be applied manually using scripts");
-        logger.LogWarning("Automatic migrations are disabled in production for safety");
+        var admin = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true,
+            FirstName = "Administrador",
+            LastName = "Sistema"
+        };
+        
+        var result = await userManager.CreateAsync(admin, "Admin123!");
+        
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(admin, "Admin");
+        }
     }
 }
 
-try
-{
-    Log.Information("Starting Facturación SaaS Web Application");
-    app.Run();
-}
-catch (Exception ex)
-{
-    Log.Fatal(ex, "Application terminated unexpectedly");
-}
-finally
-{
-    Log.CloseAndFlush();
-}
+app.Run();
