@@ -10,9 +10,16 @@ namespace WebApp.UI.Models
         public DateTime? LastLoginAt { get; set; }
         public bool IsActive { get; set; } = true;
         
-        // Propiedades adicionales para informaci�n de Google
+        // Propiedades adicionales para informaci�n de Google
         public string? GoogleId { get; set; }
         public string? ProfilePictureUrl { get; set; }
+        
+        // Información adicional del usuario
+        public DateTime? DateOfBirth { get; set; }
+        
+        // Relación con empresa
+        public int? CompanyId { get; set; }
+        public virtual Company? Company { get; set; }
         
         public string FullName => $"{FirstName} {LastName}".Trim();
     }
