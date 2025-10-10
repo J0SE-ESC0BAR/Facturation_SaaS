@@ -12,8 +12,8 @@ using WebApp.UI.Data;
 namespace WebApp.UI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250924171332_InitialIdentitySetup")]
-    partial class InitialIdentitySetup
+    [Migration("20251010170113_UpdateApplicationUserModel")]
+    partial class UpdateApplicationUserModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
