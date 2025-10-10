@@ -1,0 +1,239 @@
+@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+@{
+    ViewData["Title"] = "Gestión de Roles";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user-shield"></i> Gestión de Roles del Sistema</h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a Usuarios
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información sobre Roles</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">
+                        Los roles definen los permisos y el nivel de acceso que tienen los usuarios en la plataforma.
+                        Cada usuario puede tener uno o más roles asignados. Los roles predeterminados del sistema son:
+                        <strong>Admin</strong>, <strong>Facturador</strong> y <strong>Contador</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var role in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 @(role.Name == "Admin" ? "border-danger" : role.Name == "Facturador" ? "border-primary" : "border-success")">
+                        <div class="card-header @(role.Name == "Admin" ? "bg-danger" : role.Name == "Facturador" ? "bg-primary" : "bg-success") text-white">
+                            <h5 class="mb-0">
+                                @if (role.Name == "Admin")
+                                {
+                                    <i class="fas fa-user-shield me-2"></i>
+                                }
+                                else if (role.Name == "Facturador")
+                                {
+                                    <i class="fas fa-file-invoice me-2"></i>
+                                }
+                                else if (role.Name == "Contador")
+                                {
+                                    <i class="fas fa-calculator me-2"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-user-tag me-2"></i>
+                                }
+                                @role.Name
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                @if (role.Name == "Admin")
+                                {
+                                    <strong>Permisos:</strong>
+                                    <ul class="mt-2">
+                                        <li>Acceso completo al sistema</li>
+                                        <li>Gestión de usuarios y roles</li>
+                                        <li>Gestión de empresas</li>
+                                        <li>Configuración del sistema</li>
+                                        <li>Todos los permisos de Facturador y Contador</li>
+                                    </ul>
+                                }
+                                else if (role.Name == "Facturador")
+                                {
+                                    <strong>Permisos:</strong>
+                                    <ul class="mt-2">
+                                        <li>Emitir facturas electrónicas</li>
+                                        <li>Gestionar clientes</li>
+                                        <li>Gestionar productos/servicios</li>
+                                        <li>Registrar pagos</li>
+                                        <li>Ver reportes básicos</li>
+                                    </ul>
+                                }
+                                else if (role.Name == "Contador")
+                                {
+                                    <strong>Permisos:</strong>
+                                    <ul class="mt-2">
+                                        <li>Ver todas las facturas</li>
+                                        <li>Generar reportes financieros</li>
+                                        <li>Gestionar pagos</li>
+                                        <li>Exportar datos fiscales</li>
+                                        <li>Ver análisis y estadísticas</li>
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <strong>Permisos:</strong>
+                                    <ul class="mt-2">
+                                        <li>Rol personalizado</li>
+                                        <li>Permisos configurables</li>
+                                    </ul>
+                                }
+                            </p>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-users me-1"></i>
+                                    <span>Usuarios con este rol: -</span>
+                                </small>
+                                <small class="text-muted font-monospace">
+                                    ID: @role.Id.Substring(0, 8)...
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    No hay roles configurados en el sistema.
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Matriz de Permisos -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-table me-2"></i>Matriz de Permisos por Módulo</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Módulo / Funcionalidad</th>
+                            <th class="text-center bg-danger bg-opacity-10">
+                                <i class="fas fa-user-shield me-1"></i>Admin
+                            </th>
+                            <th class="text-center bg-primary bg-opacity-10">
+                                <i class="fas fa-file-invoice me-1"></i>Facturador
+                            </th>
+                            <th class="text-center bg-success bg-opacity-10">
+                                <i class="fas fa-calculator me-1"></i>Contador
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Dashboard</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gestión de Empresas</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                            <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gestión de Usuarios</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                            <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Emitir Facturas</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-minus text-warning"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ver Facturas</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cancelar Facturas</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                            <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gestión de Clientes</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-minus text-warning"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gestión de Productos</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-minus text-warning"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gestión de Pagos</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reportes y Análisis</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Configuración Fiscal</strong></td>
+                            <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                            <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                            <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-check text-success me-1"></i> Acceso completo &nbsp;|&nbsp;
+                    <i class="fas fa-minus text-warning me-1"></i> Acceso limitado (solo lectura) &nbsp;|&nbsp;
+                    <i class="fas fa-times text-danger me-1"></i> Sin acceso
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .bg-opacity-10 {
+            --bs-bg-opacity: 0.1;
+        }
+    </style>
+}

@@ -540,7 +540,7 @@ namespace WebApp.UI.Controllers
                 user.DateOfBirth = model.DateOfBirth;
                 user.LastLoginAt = DateTime.UtcNow;
                 user.IsActive = true; // Activar la cuenta ahora que está completa
-                user.CompanyId = company.Id;
+                user.ActiveCompanyId = company.Id;
 
                 var updateResult = await _userManager.UpdateAsync(user);
                 if (!updateResult.Succeeded)

@@ -1,0 +1,168 @@
+@model WebApp.UI.Models.CompanyViewModel
+@{
+    ViewData["Title"] = "Crear Empresa";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-building"></i> Crear Nueva Empresa</h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Información de la Empresa</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <h6 class="mb-3 text-primary"><i class="fas fa-file-contract me-2"></i>Datos Fiscales</h6>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label asp-for="Name" class="form-label">Nombre de la Empresa *</label>
+                                <input asp-for="Name" class="form-control" placeholder="Empresa S.A.">
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="TaxId" class="form-label">RNC/Cédula *</label>
+                                <input asp-for="TaxId" class="form-control" placeholder="000-0000000-0">
+                                <span asp-validation-for="TaxId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-4 text-primary"><i class="fas fa-address-card me-2"></i>Información de Contacto</h6>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label">Email *</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="contacto@empresa.com">
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label">Teléfono *</label>
+                                <input asp-for="Phone" class="form-control" placeholder="(809) 000-0000">
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Dirección *</label>
+                            <textarea asp-for="Address" class="form-control" rows="2" placeholder="Calle, número, sector"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="City" class="form-label">Ciudad *</label>
+                                <input asp-for="City" class="form-control" placeholder="Santo Domingo">
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="State" class="form-label">Provincia *</label>
+                                <select asp-for="State" class="form-select">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Distrito Nacional">Distrito Nacional</option>
+                                    <option value="Santo Domingo">Santo Domingo</option>
+                                    <option value="Santiago">Santiago</option>
+                                    <option value="La Vega">La Vega</option>
+                                    <option value="Puerto Plata">Puerto Plata</option>
+                                    <option value="San Cristóbal">San Cristóbal</option>
+                                    <option value="Duarte">Duarte</option>
+                                    <option value="La Altagracia">La Altagracia</option>
+                                </select>
+                                <span asp-validation-for="State" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ZipCode" class="form-label">Código Postal</label>
+                                <input asp-for="ZipCode" class="form-control" placeholder="10100">
+                                <span asp-validation-for="ZipCode" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 mt-4 text-primary"><i class="fas fa-image me-2"></i>Identidad Visual</h6>
+
+                        <div class="mb-3">
+                            <label for="logo" class="form-label">Logo de la Empresa</label>
+                            <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                            <small class="text-muted">Formatos permitidos: JPG, PNG. Tamaño máximo: 2MB</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Website" class="form-label">Sitio Web</label>
+                            <input asp-for="Website" type="url" class="form-control" placeholder="https://www.empresa.com">
+                            <span asp-validation-for="Website" class="text-danger"></span>
+                        </div>
+
+                        <h6 class="mb-3 mt-4 text-primary"><i class="fas fa-cog me-2"></i>Configuración Fiscal</h6>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="DGIICertificateNumber" class="form-label">Número de Certificado DGII</label>
+                                <input asp-for="DGIICertificateNumber" class="form-control" placeholder="12345">
+                                <span asp-validation-for="DGIICertificateNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DGIIEnvironment" class="form-label">Ambiente DGII</label>
+                                <select asp-for="DGIIEnvironment" class="form-select">
+                                    <option value="Test">Pruebas</option>
+                                    <option value="Production">Producción</option>
+                                </select>
+                                <span asp-validation-for="DGIIEnvironment" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Crear Empresa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información Importante</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="small">
+                        <li class="mb-2">Los campos marcados con * son obligatorios.</li>
+                        <li class="mb-2">El RNC/Cédula debe ser válido según las normas fiscales.</li>
+                        <li class="mb-2">Puedes crear múltiples empresas y cambiar entre ellas.</li>
+                        <li class="mb-2">La primera empresa creada se establecerá como activa automáticamente.</li>
+                        <li class="mb-2">Podrás editar esta información posteriormente.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-question-circle me-2"></i>¿Necesitas Ayuda?</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small mb-2">
+                        <strong>RNC:</strong> Registro Nacional de Contribuyentes (para empresas).
+                    </p>
+                    <p class="small mb-0">
+                        <strong>Cédula:</strong> Para personas físicas con actividad comercial.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
