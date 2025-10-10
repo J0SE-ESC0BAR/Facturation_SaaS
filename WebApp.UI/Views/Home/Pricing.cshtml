@@ -37,11 +37,15 @@
         font-size: 2.8rem;
         font-weight: bold;
         margin-bottom: 20px;
+        color: #fff;
+        text-shadow: 1px 1px 8px rgba(0,0,0,0.7); /* sombra para resaltar */
     }
 
     .pricing-hero-description {
         font-size: 1.2rem;
         margin-bottom: 30px;
+        color: #fff;
+        text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
     }
 
     .btn-cta-hero {
@@ -221,24 +225,21 @@
     }
 
     @@media (max-width: 768px) {
-        .pricing-hero-title
+        .pricing-hero-title {
+            font-size: 2rem;
+        }
 
-    {
-        font-size: 2rem;
-    }
+        .pricing-hero-description {
+            font-size: 1rem;
+        }
 
-    .pricing-hero-description {
-        font-size: 1rem;
-    }
+        .plan-name {
+            font-size: 1.4rem;
+        }
 
-    .plan-name {
-        font-size: 1.4rem;
-    }
-
-    .plan-price {
-        font-size: 1.6rem;
-    }
-
+        .plan-price {
+            font-size: 1.6rem;
+        }
     }
 </style>
 
@@ -430,4 +431,3 @@
         </div>
     </div>
 </section>
-++
