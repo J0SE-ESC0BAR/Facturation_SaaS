@@ -59,12 +59,24 @@ namespace WebApp.UI.Controllers
             {
                 _logger.LogInformation("Usuario {Email} inici� sesi�n exitosamente", model.Email);
                 
-                // Actualizar �ltimo login
+                // Actualizar �ltimo login y verificar si el perfil está completo
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
                     user.LastLoginAt = DateTime.UtcNow;
                     await _userManager.UpdateAsync(user);
+                    
+                    // Verificar si el usuario tiene el perfil incompleto
+                    if (!user.IsActive)
+                    {
+                        _logger.LogWarning("Usuario {Email} tiene perfil incompleto, redirigiendo a completar perfil", user.Email);
+                        TempData["Info"] = "Por favor, completa tu perfil para acceder a la plataforma.";
+                        
+                        // Cerrar la sesión temporal
+                        await _signInManager.SignOutAsync();
+                        
+                        return RedirectToAction("CompleteProfile", new { userId = user.Id, returnUrl = model.ReturnUrl });
+                    }
                 }
 
                 return RedirectToLocal(model.ReturnUrl);
@@ -182,12 +194,24 @@ namespace WebApp.UI.Controllers
             {
                 _logger.LogInformation("Usuario logueado con {Provider}", info.LoginProvider);
                 
-                // Actualizar �ltimo login
+                // Actualizar último login y verificar si el perfil está completo
                 var existingUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
                 if (existingUser != null)
                 {
                     existingUser.LastLoginAt = DateTime.UtcNow;
                     await _userManager.UpdateAsync(existingUser);
+                    
+                    // Verificar si el usuario tiene el perfil incompleto
+                    if (!existingUser.IsActive)
+                    {
+                        _logger.LogWarning("Usuario {Email} tiene perfil incompleto, redirigiendo a completar perfil", existingUser.Email);
+                        TempData["Info"] = "Por favor, completa tu perfil para acceder a la plataforma.";
+                        
+                        // Cerrar la sesión temporal
+                        await _signInManager.SignOutAsync();
+                        
+                        return RedirectToAction("CompleteProfile", new { userId = existingUser.Id, returnUrl });
+                    }
                 }
 
                 return RedirectToLocal(returnUrl);
@@ -321,12 +345,24 @@ namespace WebApp.UI.Controllers
             {
                 _logger.LogInformation("Usuario logueado con {Provider}", info.LoginProvider);
                 
-                // Actualizar último login
+                // Actualizar último login y verificar si el perfil está completo
                 var existingUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
                 if (existingUser != null)
                 {
                     existingUser.LastLoginAt = DateTime.UtcNow;
                     await _userManager.UpdateAsync(existingUser);
+                    
+                    // Verificar si el usuario tiene el perfil incompleto
+                    if (!existingUser.IsActive)
+                    {
+                        _logger.LogWarning("Usuario {Email} tiene perfil incompleto, redirigiendo a completar perfil", existingUser.Email);
+                        TempData["Info"] = "Por favor, completa tu perfil para acceder a la plataforma.";
+                        
+                        // Cerrar la sesión temporal
+                        await _signInManager.SignOutAsync();
+                        
+                        return RedirectToAction("CompleteProfile", new { userId = existingUser.Id, returnUrl });
+                    }
                 }
 
                 return RedirectToLocal(returnUrl);
@@ -576,7 +612,7 @@ namespace WebApp.UI.Controllers
         [Authorize]
         public IActionResult Dashboard()
         {
-            return View();
+            return RedirectToAction("Index", "Dashboard");
         }
 
         #endregion
