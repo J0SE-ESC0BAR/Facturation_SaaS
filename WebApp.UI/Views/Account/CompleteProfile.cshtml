@@ -1,0 +1,170 @@
+@model CompleteProfileViewModel
+@{
+    ViewData["Title"] = "Completar Perfil";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-3x text-primary mb-3"></i>
+                        <h2 class="h4">Completar tu Perfil</h2>
+                        <p class="text-muted">Solo un paso más para acceder a la plataforma</p>
+                    </div>
+
+                    @if (TempData["Info"] != null)
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            @TempData["Info"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <form asp-action="CompleteProfile" method="post">
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="ReturnUrl" />
+                        <input type="hidden" asp-for="Email" />
+                        <input type="hidden" asp-for="ProfilePictureUrl" />
+
+                        <!-- Información personal -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-user me-2"></i>Información Personal
+                            </h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label asp-for="FirstName" class="form-label fw-bold"></label>
+                                    <input asp-for="FirstName" class="form-control" placeholder="Ingresa tu nombre" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="LastName" class="form-label fw-bold"></label>
+                                    <input asp-for="LastName" class="form-control" placeholder="Ingresa tu apellido" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <input type="text" class="form-control" value="@Model.Email" readonly />
+                                <small class="text-muted">El email no se puede modificar</small>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="PhoneNumber" class="form-label fw-bold"></label>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="+1 (809) 123-4567" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="DateOfBirth" class="form-label fw-bold"></label>
+                                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información de la empresa -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-building me-2"></i>Información de la Empresa
+                            </h5>
+
+                            <div class="mb-3">
+                                <label asp-for="CompanyName" class="form-label fw-bold"></label>
+                                <input asp-for="CompanyName" class="form-control" placeholder="Mi Empresa SRL" />
+                                <span asp-validation-for="CompanyName" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="CompanyRNC" class="form-label fw-bold"></label>
+                                    <input asp-for="CompanyRNC" class="form-control" placeholder="123456789" maxlength="11" />
+                                    <span asp-validation-for="CompanyRNC" class="text-danger"></span>
+                                    <small class="text-muted">RNC o Cédula (9-11 dígitos)</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="CompanyPhone" class="form-label fw-bold"></label>
+                                    <input asp-for="CompanyPhone" class="form-control" placeholder="+1 (809) 123-4567" />
+                                    <span asp-validation-for="CompanyPhone" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="CompanyAddress" class="form-label fw-bold"></label>
+                                <textarea asp-for="CompanyAddress" class="form-control" rows="2" 
+                                          placeholder="Calle Principal #123, Sector, Ciudad"></textarea>
+                                <span asp-validation-for="CompanyAddress" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="CompanyEmail" class="form-label fw-bold"></label>
+                                <input asp-for="CompanyEmail" class="form-control" placeholder="info@miempresa.com" />
+                                <span asp-validation-for="CompanyEmail" class="text-danger"></span>
+                                <small class="text-muted">Opcional - Email de contacto de la empresa</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Role" class="form-label fw-bold"></label>
+                                <select asp-for="Role" class="form-select">
+                                    <option value="">-- Seleccione su rol --</option>
+                                    <option value="Admin">Administrador</option>
+                                    <option value="Contador">Contador</option>
+                                    <option value="Facturador">Facturador</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check-circle me-2"></i>Completar Registro
+                            </button>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                Al completar tu perfil aceptas nuestros 
+                                <a href="#" class="text-decoration-none">Términos y Condiciones</a>
+                            </small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Validación adicional del RNC (solo números)
+        document.querySelector('input[name="CompanyRNC"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+        
+        // Establecer fecha máxima para fecha de nacimiento (18 años atrás)
+        const dobInput = document.querySelector('input[name="DateOfBirth"]');
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+        dobInput.max = maxDate.toISOString().split('T')[0];
+    </script>
+}

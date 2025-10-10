@@ -29,6 +29,7 @@
                     <!-- Registro con Google -->
                     <form asp-action="GoogleLogin" method="post">
                         <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                        <input type="hidden" name="isRegister" value="true" />
                         <div class="d-grid mb-2">
                             <button type="submit" class="btn btn-danger btn-lg">
                                 <i class="fab fa-google me-2"></i>
@@ -40,6 +41,7 @@
                     <!-- Registro con Microsoft -->
                     <form asp-action="MicrosoftLogin" method="post">
                         <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                        <input type="hidden" name="isRegister" value="true" />
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fab fa-microsoft me-2"></i>

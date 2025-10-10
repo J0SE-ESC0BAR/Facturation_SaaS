@@ -1,3 +1,12 @@
 ﻿@{
-    Layout = "_Layout";
+    // Si el usuario está autenticado, usar el layout del Dashboard (con sidebar)
+    // Si no está autenticado, usar el layout de la landing page (con navbar y footer)
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        Layout = "_LayoutDashboard";
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
 }

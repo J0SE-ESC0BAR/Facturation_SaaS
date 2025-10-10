@@ -1,0 +1,145 @@
+@model WebApp.UI.Models.EditUserViewModel
+@{
+    ViewData["Title"] = "Editar Usuario";
+    var allRoles = ViewBag.AllRoles as List<Microsoft.AspNetCore.Identity.IdentityRole>;
+    var userRoles = ViewBag.UserRoles as IList<string>;
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user-edit"></i> Editar Usuario</h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Información del Usuario</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label">Nombre *</label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Juan">
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label">Apellido *</label>
+                                <input asp-for="LastName" class="form-control" placeholder="Pérez">
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Correo Electrónico *</label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="usuario@example.com">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <small class="text-muted">El email también se usará como nombre de usuario.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch">
+                                <label asp-for="IsActive" class="form-check-label">
+                                    Usuario Activo
+                                </label>
+                            </div>
+                            <small class="text-muted">Los usuarios inactivos no podrán iniciar sesión.</small>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h6 class="mb-3"><i class="fas fa-user-shield me-2"></i>Roles del Usuario</h6>
+                        
+                        @if (allRoles != null && allRoles.Any())
+                        {
+                            <div class="row">
+                                @foreach (var role in allRoles)
+                                {
+                                    <div class="col-md-4 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                   type="checkbox" 
+                                                   name="roles" 
+                                                   value="@role.Name" 
+                                                   id="role_@role.Id"
+                                                   @(userRoles != null && userRoles.Contains(role.Name ?? string.Empty) ? "checked" : "")>
+                                            <label class="form-check-label" for="role_@role.Id">
+                                                @role.Name
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No hay roles configurados en el sistema.
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Roles Disponibles</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <strong><i class="fas fa-user-shield text-danger me-2"></i>Admin</strong><br>
+                            <small class="text-muted">Acceso completo al sistema, gestión de usuarios y empresas.</small>
+                        </li>
+                        <li class="mb-3">
+                            <strong><i class="fas fa-file-invoice text-primary me-2"></i>Facturador</strong><br>
+                            <small class="text-muted">Emisión de facturas, gestión de clientes y productos.</small>
+                        </li>
+                        <li>
+                            <strong><i class="fas fa-calculator text-success me-2"></i>Contador</strong><br>
+                            <small class="text-muted">Acceso a reportes, pagos y análisis financiero.</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Advertencia</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small mb-0">
+                        Los cambios en los roles del usuario afectarán inmediatamente sus permisos de acceso en la plataforma.
+                        Asegúrese de asignar los roles apropiados según las responsabilidades del usuario.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
