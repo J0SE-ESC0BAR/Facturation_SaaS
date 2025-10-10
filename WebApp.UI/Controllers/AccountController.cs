@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WebApp.UI.Models;
+using WebApp.UI.Data;
 
 namespace WebApp.UI.Controllers
 {
@@ -12,15 +14,21 @@ namespace WebApp.UI.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountController(
             ILogger<AccountController> logger,
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ApplicationDbContext context,
+            RoleManager<IdentityRole> roleManager)
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
+            _roleManager = roleManager;
         }
 
         #region Login
@@ -138,21 +146,21 @@ namespace WebApp.UI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult GoogleLogin(string? returnUrl = null)
+        public IActionResult GoogleLogin(string? returnUrl = null, bool isRegister = false)
         {
-            var redirectUrl = Url.Action("GoogleCallback", "Account", new { returnUrl });
+            var redirectUrl = Url.Action("GoogleCallback", "Account", new { returnUrl, isRegister });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
             return Challenge(properties, "Google");
         }
 
         [HttpGet]
-        public async Task<IActionResult> GoogleCallback(string? returnUrl = null, string? remoteError = null)
+        public async Task<IActionResult> GoogleCallback(string? returnUrl = null, string? remoteError = null, bool isRegister = false)
         {
             if (remoteError != null)
             {
                 _logger.LogError("Error en autenticaci�n externa: {Error}", remoteError);
                 TempData["Error"] = $"Error en autenticaci�n externa: {remoteError}";
-                return RedirectToAction("Login");
+                return RedirectToAction(isRegister ? "Register" : "Login");
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -160,7 +168,7 @@ namespace WebApp.UI.Controllers
             {
                 _logger.LogError("No se pudo obtener informaci�n de login externo");
                 TempData["Error"] = "Error al obtener informaci�n de Google";
-                return RedirectToAction("Login");
+                return RedirectToAction(isRegister ? "Register" : "Login");
             }
 
             // Intentar login con el proveedor externo
@@ -190,7 +198,7 @@ namespace WebApp.UI.Controllers
                 return RedirectToAction("Lockout");
             }
 
-            // Si el usuario no existe, crear uno nuevo
+            // Si el usuario no existe, obtener información básica
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
             var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "";
@@ -201,26 +209,41 @@ namespace WebApp.UI.Controllers
             if (string.IsNullOrEmpty(email))
             {
                 TempData["Error"] = "No se pudo obtener el email desde Google";
-                return RedirectToAction("Login");
+                return RedirectToAction(isRegister ? "Register" : "Login");
             }
 
-            // Verificar si ya existe un usuario con ese email
+            // Verificar si existe un usuario con ese email (creado localmente)
             var existingUserByEmail = await _userManager.FindByEmailAsync(email);
             if (existingUserByEmail != null)
             {
-                // Asociar el login externo al usuario existente
+                // Si el usuario existe pero no tiene login externo asociado, asociarlo
                 var addLoginResult = await _userManager.AddLoginAsync(existingUserByEmail, info);
                 if (addLoginResult.Succeeded)
                 {
                     await _signInManager.SignInAsync(existingUserByEmail, isPersistent: false);
                     existingUserByEmail.LastLoginAt = DateTime.UtcNow;
                     await _userManager.UpdateAsync(existingUserByEmail);
+                    _logger.LogInformation("Cuenta de Google asociada a usuario existente: {Email}", email);
                     return RedirectToLocal(returnUrl);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo asociar la cuenta de Google a su usuario existente";
+                    return RedirectToAction(isRegister ? "Register" : "Login");
                 }
             }
 
-            // Crear nuevo usuario
-            var user = new ApplicationUser
+            // Usuario NO existe en el sistema
+            if (!isRegister)
+            {
+                // Usuario intentó hacer LOGIN pero no existe
+                TempData["Error"] = "No se encontró una cuenta asociada a este email. Por favor, regístrese primero.";
+                _logger.LogWarning("Intento de login con Google fallido - Usuario no registrado: {Email}", email);
+                return RedirectToAction("Login");
+            }
+
+            // Usuario viene de REGISTRO - crear usuario temporal y redirigir a completar perfil
+            var tempUser = new ApplicationUser
             {
                 UserName = email,
                 Email = email,
@@ -229,29 +252,31 @@ namespace WebApp.UI.Controllers
                 GoogleId = googleId,
                 ProfilePictureUrl = picture,
                 CreatedAt = DateTime.UtcNow,
-                LastLoginAt = DateTime.UtcNow,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                IsActive = false // Marcar como inactivo hasta completar perfil
             };
 
-            var createResult = await _userManager.CreateAsync(user);
+            var createResult = await _userManager.CreateAsync(tempUser);
             if (createResult.Succeeded)
             {
-                var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                var addLoginResult = await _userManager.AddLoginAsync(tempUser, info);
                 if (addLoginResult.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("Usuario creado con login externo {Provider}", info.LoginProvider);
-                    return RedirectToLocal(returnUrl);
+                    _logger.LogInformation("Usuario temporal creado con Google - Pendiente completar perfil: {Email}", email);
+                    
+                    // Redirigir a completar perfil
+                    return RedirectToAction("CompleteProfile", new { userId = tempUser.Id, returnUrl });
                 }
             }
 
             foreach (var error in createResult.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
+                _logger.LogError("Error al crear usuario con Google: {Error}", error.Description);
             }
 
-            TempData["Error"] = "Error al crear la cuenta con Google";
-            return RedirectToAction("Login");
+            TempData["Error"] = "Error al iniciar el proceso de registro con Google";
+            return RedirectToAction("Register");
         }
 
         #endregion
@@ -260,21 +285,21 @@ namespace WebApp.UI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult MicrosoftLogin(string? returnUrl = null)
+        public IActionResult MicrosoftLogin(string? returnUrl = null, bool isRegister = false)
         {
-            var redirectUrl = Url.Action("MicrosoftCallback", "Account", new { returnUrl });
+            var redirectUrl = Url.Action("MicrosoftCallback", "Account", new { returnUrl, isRegister });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Microsoft", redirectUrl);
             return Challenge(properties, "Microsoft");
         }
 
         [HttpGet]
-        public async Task<IActionResult> MicrosoftCallback(string? returnUrl = null, string? remoteError = null)
+        public async Task<IActionResult> MicrosoftCallback(string? returnUrl = null, string? remoteError = null, bool isRegister = false)
         {
             if (remoteError != null)
             {
                 _logger.LogError("Error en autenticación externa Microsoft: {Error}", remoteError);
                 TempData["Error"] = $"Error en autenticación externa Microsoft: {remoteError}";
-                return RedirectToAction("Login");
+                return RedirectToAction(isRegister ? "Register" : "Login");
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -282,7 +307,7 @@ namespace WebApp.UI.Controllers
             {
                 _logger.LogError("No se pudo obtener información de login externo Microsoft");
                 TempData["Error"] = "Error al obtener información de Microsoft";
-                return RedirectToAction("Login");
+                return RedirectToAction(isRegister ? "Register" : "Login");
             }
 
             // Intentar login con el proveedor externo
@@ -312,7 +337,7 @@ namespace WebApp.UI.Controllers
                 return RedirectToAction("Lockout");
             }
 
-            // Si el usuario no existe, crear uno nuevo
+            // Si el usuario no existe, obtener información básica
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
             var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "";
@@ -322,55 +347,213 @@ namespace WebApp.UI.Controllers
             if (string.IsNullOrEmpty(email))
             {
                 TempData["Error"] = "No se pudo obtener el email desde Microsoft";
-                return RedirectToAction("Login");
+                return RedirectToAction(isRegister ? "Register" : "Login");
             }
 
-            // Verificar si ya existe un usuario con ese email
+            // Verificar si existe un usuario con ese email (creado localmente)
             var existingUserByEmail = await _userManager.FindByEmailAsync(email);
             if (existingUserByEmail != null)
             {
-                // Asociar el login externo al usuario existente
+                // Si el usuario existe pero no tiene login externo asociado, asociarlo
                 var addLoginResult = await _userManager.AddLoginAsync(existingUserByEmail, info);
                 if (addLoginResult.Succeeded)
                 {
                     await _signInManager.SignInAsync(existingUserByEmail, isPersistent: false);
                     existingUserByEmail.LastLoginAt = DateTime.UtcNow;
                     await _userManager.UpdateAsync(existingUserByEmail);
+                    _logger.LogInformation("Cuenta de Microsoft asociada a usuario existente: {Email}", email);
                     return RedirectToLocal(returnUrl);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo asociar la cuenta de Microsoft a su usuario existente";
+                    return RedirectToAction(isRegister ? "Register" : "Login");
                 }
             }
 
-            // Crear nuevo usuario
-            var user = new ApplicationUser
+            // Usuario NO existe en el sistema
+            if (!isRegister)
+            {
+                // Usuario intentó hacer LOGIN pero no existe
+                TempData["Error"] = "No se encontró una cuenta asociada a este email. Por favor, regístrese primero.";
+                _logger.LogWarning("Intento de login con Microsoft fallido - Usuario no registrado: {Email}", email);
+                return RedirectToAction("Login");
+            }
+
+            // Usuario viene de REGISTRO - crear usuario temporal y redirigir a completar perfil
+            var tempUser = new ApplicationUser
             {
                 UserName = email,
                 Email = email,
                 FirstName = firstName,
                 LastName = lastName,
                 CreatedAt = DateTime.UtcNow,
-                LastLoginAt = DateTime.UtcNow,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                IsActive = false // Marcar como inactivo hasta completar perfil
             };
 
-            var createResult = await _userManager.CreateAsync(user);
+            var createResult = await _userManager.CreateAsync(tempUser);
             if (createResult.Succeeded)
             {
-                var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                var addLoginResult = await _userManager.AddLoginAsync(tempUser, info);
                 if (addLoginResult.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("Usuario creado con login externo {Provider}", info.LoginProvider);
-                    return RedirectToLocal(returnUrl);
+                    _logger.LogInformation("Usuario temporal creado con Microsoft - Pendiente completar perfil: {Email}", email);
+                    
+                    // Redirigir a completar perfil
+                    return RedirectToAction("CompleteProfile", new { userId = tempUser.Id, returnUrl });
                 }
             }
 
             foreach (var error in createResult.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
+                _logger.LogError("Error al crear usuario con Microsoft: {Error}", error.Description);
             }
 
-            TempData["Error"] = "Error al crear la cuenta con Microsoft";
-            return RedirectToAction("Login");
+            TempData["Error"] = "Error al iniciar el proceso de registro con Microsoft";
+            return RedirectToAction("Register");
+        }
+
+        #endregion
+
+        #region Complete Profile (Post-registro OAuth)
+
+        [HttpGet]
+        public async Task<IActionResult> CompleteProfile(string userId, string? returnUrl = null)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                TempData["Error"] = "Usuario no encontrado";
+                return RedirectToAction("Login");
+            }
+
+            // Verificar que el usuario esté en estado de perfil incompleto
+            if (user.IsActive)
+            {
+                // Usuario ya completó su perfil, redirigir al dashboard
+                return RedirectToLocal(returnUrl);
+            }
+
+            var model = new CompleteProfileViewModel
+            {
+                UserId = user.Id,
+                FirstName = user.FirstName ?? "",
+                LastName = user.LastName ?? "",
+                Email = user.Email ?? "",
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                ReturnUrl = returnUrl
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteProfile(CompleteProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                TempData["Error"] = "Usuario no encontrado";
+                return RedirectToAction("Login");
+            }
+
+            try
+            {
+                // 1. Crear o buscar la empresa
+                var company = await _context.Companies
+                    .FirstOrDefaultAsync(c => c.RNC == model.CompanyRNC);
+
+                if (company == null)
+                {
+                    // Crear nueva empresa
+                    company = new Company
+                    {
+                        Name = model.CompanyName,
+                        RNC = model.CompanyRNC,
+                        Address = model.CompanyAddress,
+                        Phone = model.CompanyPhone,
+                        Email = model.CompanyEmail,
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true
+                    };
+
+                    _context.Companies.Add(company);
+                    await _context.SaveChangesAsync();
+                    
+                    _logger.LogInformation("Nueva empresa creada: {CompanyName} - RNC: {RNC}", 
+                        company.Name, company.RNC);
+                }
+                else
+                {
+                    _logger.LogInformation("Usuario asociado a empresa existente: {CompanyName}", 
+                        company.Name);
+                }
+
+                // 2. Actualizar información del usuario
+                user.FirstName = model.FirstName; // Usar el valor del formulario
+                user.LastName = model.LastName; // Usar el valor del formulario
+                user.PhoneNumber = model.PhoneNumber;
+                user.DateOfBirth = model.DateOfBirth;
+                user.LastLoginAt = DateTime.UtcNow;
+                user.IsActive = true; // Activar la cuenta ahora que está completa
+                user.CompanyId = company.Id;
+
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    foreach (var error in updateResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
+
+                // 3. Asignar rol al usuario
+                if (!string.IsNullOrEmpty(model.Role))
+                {
+                    // Verificar que el rol existe, si no, crearlo
+                    if (!await _roleManager.RoleExistsAsync(model.Role))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(model.Role));
+                        _logger.LogInformation("Rol creado: {Role}", model.Role);
+                    }
+
+                    var roleResult = await _userManager.AddToRoleAsync(user, model.Role);
+                    if (roleResult.Succeeded)
+                    {
+                        _logger.LogInformation("Rol {Role} asignado al usuario {Email}", 
+                            model.Role, user.Email);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("No se pudo asignar el rol {Role} al usuario {Email}. Errores: {Errors}",
+                            model.Role, user.Email, string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                    }
+                }
+
+                // 4. Iniciar sesión del usuario
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                TempData["Success"] = "¡Bienvenido! Tu perfil ha sido completado exitosamente.";
+                _logger.LogInformation("Usuario {Email} completó su perfil y accedió a la plataforma. Empresa: {Company}, Rol: {Role}",
+                    user.Email, company.Name, model.Role);
+
+                return RedirectToLocal(model.ReturnUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al completar el perfil del usuario {Email}", user.Email);
+                TempData["Error"] = "Ocurrió un error al completar tu perfil. Por favor, intenta nuevamente.";
+                return View(model);
+            }
         }
 
         #endregion
