@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApp.UI.Migrations
 {
     /// <inheritdoc />
-    public partial class MultiCompanyArchitecture : Migration
+    public partial class MigracionInicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,25 +23,6 @@ namespace WebApp.UI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Companies",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RNC = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Companies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,48 +47,6 @@ namespace WebApp.UI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MicrosoftId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastLoginAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    ActiveCompanyId = table.Column<int>(type: "int", nullable: true),
-                    CompanyId = table.Column<int>(type: "int", nullable: true),
-                    IsFirstLogin = table.Column<bool>(type: "bit", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Companies_ActiveCompanyId",
-                        column: x => x.ActiveCompanyId,
-                        principalTable: "Companies",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -120,12 +59,6 @@ namespace WebApp.UI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -140,12 +73,6 @@ namespace WebApp.UI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -164,12 +91,42 @@ namespace WebApp.UI.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastLoginAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    GoogleId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    MicrosoftId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsFirstLogin = table.Column<bool>(type: "bit", nullable: false),
+                    ActiveCompanyId = table.Column<int>(type: "int", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -193,6 +150,47 @@ namespace WebApp.UI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    RNC = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    State = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ZipCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, defaultValue: "República Dominicana"),
+                    Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    LogoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DGIICertificateNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    DGIIUsername = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DGIIPassword = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DGIIEnvironment = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "Test"),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DefaultInvoiceSeries = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    NextInvoiceNumber = table.Column<int>(type: "int", nullable: false),
+                    DefaultCreditNoteSeries = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    NextCreditNoteNumber = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Companies_AspNetUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Clients",
                 columns: table => new
                 {
@@ -201,37 +199,37 @@ namespace WebApp.UI.Migrations
                     CompanyId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     TaxId = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    IdType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    IdType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "RNC"),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     State = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, defaultValue: "República Dominicana"),
                     CustomerType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    CreditLimit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreditLimit = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Clients_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
+                        name: "FK_Clients_AspNetUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Clients_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -245,37 +243,37 @@ namespace WebApp.UI.Migrations
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TaxRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "Product"),
+                    Unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Unidad"),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Cost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    TaxRate = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false, defaultValue: 18m),
                     IsTaxable = table.Column<bool>(type: "bit", nullable: false),
-                    Stock = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MinimumStock = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Stock = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    MinimumStock = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     TrackInventory = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Barcode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Products_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
+                        name: "FK_Products_AspNetUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Products_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -286,7 +284,7 @@ namespace WebApp.UI.Migrations
                     CompanyId = table.Column<int>(type: "int", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false),
                     RoleInCompany = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AssignedByUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     LastActivityAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -298,7 +296,8 @@ namespace WebApp.UI.Migrations
                         name: "FK_UserCompanies_AspNetUsers_AssignedByUserId",
                         column: x => x.AssignedByUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserCompanies_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -327,13 +326,13 @@ namespace WebApp.UI.Migrations
                     Series = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     IssueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    AmountPaid = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "Draft"),
+                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    AmountPaid = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     PaymentTerms = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -345,35 +344,35 @@ namespace WebApp.UI.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UpdatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Invoices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Invoices_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
+                        name: "FK_Invoices_AspNetUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Invoices_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
+                        name: "FK_Invoices_AspNetUsers_UpdatedByUserId",
+                        column: x => x.UpdatedByUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Invoices_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Invoices_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -386,16 +385,16 @@ namespace WebApp.UI.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: true),
                     LineNumber = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
                     Unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DiscountPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    SubtotalAfterDiscount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TaxRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    DiscountPercentage = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    SubtotalAfterDiscount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    TaxRate = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -410,7 +409,8 @@ namespace WebApp.UI.Migrations
                         name: "FK_InvoiceLines_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -424,42 +424,43 @@ namespace WebApp.UI.Migrations
                     InvoiceId = table.Column<int>(type: "int", nullable: true),
                     ReceiptNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Cash"),
                     ReferenceNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Bank = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "Completed"),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedByUserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Payments_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
+                        name: "FK_Payments_AspNetUsers_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Payments_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Payments_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Payments_Invoices_InvoiceId",
                         column: x => x.InvoiceId,
                         principalTable: "Invoices",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -500,6 +501,21 @@ namespace WebApp.UI.Migrations
                 column: "ActiveCompanyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_Email",
+                table: "AspNetUsers",
+                column: "Email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_GoogleId",
+                table: "AspNetUsers",
+                column: "GoogleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_MicrosoftId",
+                table: "AspNetUsers",
+                column: "MicrosoftId");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -507,19 +523,41 @@ namespace WebApp.UI.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Clients_CompanyId",
+                name: "IX_Clients_CompanyId_TaxId",
                 table: "Clients",
-                column: "CompanyId");
+                columns: new[] { "CompanyId", "TaxId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Clients_CreatedById",
+                name: "IX_Clients_CreatedByUserId",
                 table: "Clients",
-                column: "CreatedById");
+                column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InvoiceLines_InvoiceId",
+                name: "IX_Clients_IsActive",
+                table: "Clients",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Companies_CreatedByUserId",
+                table: "Companies",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Companies_IsActive",
+                table: "Companies",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Companies_RNC",
+                table: "Companies",
+                column: "RNC",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvoiceLines_InvoiceId_LineNumber",
                 table: "InvoiceLines",
-                column: "InvoiceId");
+                columns: new[] { "InvoiceId", "LineNumber" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_InvoiceLines_ProductId",
@@ -532,19 +570,35 @@ namespace WebApp.UI.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoices_CompanyId",
+                name: "IX_Invoices_CompanyId_InvoiceNumber",
                 table: "Invoices",
-                column: "CompanyId");
+                columns: new[] { "CompanyId", "InvoiceNumber" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoices_CreatedById",
+                name: "IX_Invoices_CreatedByUserId",
                 table: "Invoices",
-                column: "CreatedById");
+                column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoices_UpdatedById",
+                name: "IX_Invoices_IssueDate",
                 table: "Invoices",
-                column: "UpdatedById");
+                column: "IssueDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_NCF",
+                table: "Invoices",
+                column: "NCF");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_Status",
+                table: "Invoices",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_UpdatedByUserId",
+                table: "Invoices",
+                column: "UpdatedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_ClientId",
@@ -552,14 +606,15 @@ namespace WebApp.UI.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_CompanyId",
+                name: "IX_Payments_CompanyId_ReceiptNumber",
                 table: "Payments",
-                column: "CompanyId");
+                columns: new[] { "CompanyId", "ReceiptNumber" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_CreatedById",
+                name: "IX_Payments_CreatedByUserId",
                 table: "Payments",
-                column: "CreatedById");
+                column: "CreatedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_InvoiceId",
@@ -567,14 +622,35 @@ namespace WebApp.UI.Migrations
                 column: "InvoiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_CompanyId",
-                table: "Products",
-                column: "CompanyId");
+                name: "IX_Payments_PaymentDate",
+                table: "Payments",
+                column: "PaymentDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_CreatedById",
+                name: "IX_Payments_Status",
+                table: "Payments",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_Barcode",
                 table: "Products",
-                column: "CreatedById");
+                column: "Barcode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_CompanyId_Code",
+                table: "Products",
+                columns: new[] { "CompanyId", "Code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_CreatedByUserId",
+                table: "Products",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_IsActive",
+                table: "Products",
+                column: "IsActive");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserCompanies_AssignedByUserId",
@@ -585,11 +661,57 @@ namespace WebApp.UI.Migrations
                 name: "IX_UserCompanies_CompanyId",
                 table: "UserCompanies",
                 column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserCompanies_IsActive",
+                table: "UserCompanies",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserCompanies_RoleInCompany",
+                table: "UserCompanies",
+                column: "RoleInCompany");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                table: "AspNetUserRoles",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUsers_Companies_ActiveCompanyId",
+                table: "AspNetUsers",
+                column: "ActiveCompanyId",
+                principalTable: "Companies",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Companies_AspNetUsers_CreatedByUserId",
+                table: "Companies");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

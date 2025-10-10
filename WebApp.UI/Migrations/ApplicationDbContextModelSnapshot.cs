@@ -170,9 +170,6 @@ namespace WebApp.UI.Migrations
                     b.Property<int?>("ActiveCompanyId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -191,10 +188,12 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("GoogleId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -206,7 +205,8 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -215,7 +215,8 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("MicrosoftId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -251,6 +252,12 @@ namespace WebApp.UI.Migrations
 
                     b.HasIndex("ActiveCompanyId");
 
+                    b.HasIndex("Email");
+
+                    b.HasIndex("GoogleId");
+
+                    b.HasIndex("MicrosoftId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -275,6 +282,7 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("Balance")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("City")
@@ -286,20 +294,20 @@ namespace WebApp.UI.Migrations
 
                     b.Property<string>("Country")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasDefaultValue("República Dominicana");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedById")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CreatedByUserId")
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("CreditLimit")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CustomerType")
@@ -312,8 +320,10 @@ namespace WebApp.UI.Migrations
 
                     b.Property<string>("IdType")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("RNC");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -344,9 +354,12 @@ namespace WebApp.UI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("CreatedById");
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("CompanyId", "TaxId")
+                        .IsUnique();
 
                     b.ToTable("Clients");
                 });
@@ -361,30 +374,107 @@ namespace WebApp.UI.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasDefaultValue("República Dominicana");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("CreatedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DGIICertificateNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("DGIIEnvironment")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Test");
+
+                    b.Property<string>("DGIIPassword")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DGIIUsername")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DefaultCreditNoteSeries")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("DefaultInvoiceSeries")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<string>("LogoUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("NextCreditNoteNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NextInvoiceNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("RNC")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("State")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ZipCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("RNC")
+                        .IsUnique();
 
                     b.ToTable("Companies");
                 });
@@ -398,9 +488,11 @@ namespace WebApp.UI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Balance")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ClientId")
@@ -411,9 +503,6 @@ namespace WebApp.UI.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedById")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CreatedByUserId")
                         .IsRequired()
@@ -428,6 +517,7 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("DiscountAmount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("DueDate")
@@ -472,26 +562,28 @@ namespace WebApp.UI.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Draft");
 
                     b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TaxAmount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("TermsAndConditions")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedById")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UpdatedByUserId")
                         .HasMaxLength(450)
@@ -501,11 +593,18 @@ namespace WebApp.UI.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("CreatedById");
+                    b.HasIndex("IssueDate");
 
-                    b.HasIndex("UpdatedById");
+                    b.HasIndex("NCF");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.HasIndex("CompanyId", "InvoiceNumber")
+                        .IsUnique();
 
                     b.ToTable("Invoices");
                 });
@@ -524,10 +623,12 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("DiscountAmount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("DiscountPercentage")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("InvoiceId")
                         .HasColumnType("int");
@@ -539,21 +640,27 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("SubtotalAfterDiscount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TaxAmount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TaxRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Unit")
@@ -562,13 +669,14 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InvoiceId");
-
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("InvoiceId", "LineNumber");
 
                     b.ToTable("InvoiceLines");
                 });
@@ -582,6 +690,7 @@ namespace WebApp.UI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Bank")
@@ -596,9 +705,6 @@ namespace WebApp.UI.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedById")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CreatedByUserId")
                         .IsRequired()
@@ -616,8 +722,10 @@ namespace WebApp.UI.Migrations
 
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Cash");
 
                     b.Property<string>("ReceiptNumber")
                         .IsRequired()
@@ -630,8 +738,10 @@ namespace WebApp.UI.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Completed");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -640,11 +750,16 @@ namespace WebApp.UI.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("CompanyId");
-
-                    b.HasIndex("CreatedById");
+                    b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("InvoiceId");
+
+                    b.HasIndex("PaymentDate");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("CompanyId", "ReceiptNumber")
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -674,13 +789,11 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Cost")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedById")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CreatedByUserId")
                         .HasMaxLength(450)
@@ -700,7 +813,8 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("MinimumStock")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -708,25 +822,34 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal>("Stock")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<decimal>("TaxRate")
-                        .HasColumnType("decimal(18,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(18m);
 
                     b.Property<bool>("TrackInventory")
                         .HasColumnType("bit");
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Product");
 
                     b.Property<string>("Unit")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Unidad");
 
                     b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -734,9 +857,14 @@ namespace WebApp.UI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("Barcode");
 
-                    b.HasIndex("CreatedById");
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("CompanyId", "Code")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });
@@ -759,7 +887,9 @@ namespace WebApp.UI.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<DateTime?>("LastActivityAt")
                         .HasColumnType("datetime2");
@@ -774,6 +904,10 @@ namespace WebApp.UI.Migrations
                     b.HasIndex("AssignedByUserId");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("RoleInCompany");
 
                     b.ToTable("UserCompanies");
                 });
@@ -833,7 +967,8 @@ namespace WebApp.UI.Migrations
                 {
                     b.HasOne("WebApp.UI.Models.Company", "ActiveCompany")
                         .WithMany()
-                        .HasForeignKey("ActiveCompanyId");
+                        .HasForeignKey("ActiveCompanyId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("ActiveCompany");
                 });
@@ -843,14 +978,25 @@ namespace WebApp.UI.Migrations
                     b.HasOne("WebApp.UI.Models.Company", "Company")
                         .WithMany("Clients")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebApp.UI.Models.ApplicationUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById");
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Company");
+
+                    b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("WebApp.UI.Models.Company", b =>
+                {
+                    b.HasOne("WebApp.UI.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedBy");
                 });
@@ -860,22 +1006,25 @@ namespace WebApp.UI.Migrations
                     b.HasOne("WebApp.UI.Models.Client", "Client")
                         .WithMany("Invoices")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebApp.UI.Models.Company", "Company")
                         .WithMany("Invoices")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebApp.UI.Models.ApplicationUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById");
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("WebApp.UI.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
-                        .HasForeignKey("UpdatedById");
+                        .HasForeignKey("UpdatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Client");
 
@@ -896,7 +1045,8 @@ namespace WebApp.UI.Migrations
 
                     b.HasOne("WebApp.UI.Models.Product", "Product")
                         .WithMany("InvoiceLines")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Invoice");
 
@@ -908,22 +1058,25 @@ namespace WebApp.UI.Migrations
                     b.HasOne("WebApp.UI.Models.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebApp.UI.Models.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebApp.UI.Models.ApplicationUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById");
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("WebApp.UI.Models.Invoice", "Invoice")
                         .WithMany("Payments")
-                        .HasForeignKey("InvoiceId");
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Client");
 
@@ -939,12 +1092,13 @@ namespace WebApp.UI.Migrations
                     b.HasOne("WebApp.UI.Models.Company", "Company")
                         .WithMany("Products")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("WebApp.UI.Models.ApplicationUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById");
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Company");
 
@@ -955,7 +1109,8 @@ namespace WebApp.UI.Migrations
                 {
                     b.HasOne("WebApp.UI.Models.ApplicationUser", "AssignedBy")
                         .WithMany()
-                        .HasForeignKey("AssignedByUserId");
+                        .HasForeignKey("AssignedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WebApp.UI.Models.Company", "Company")
                         .WithMany("UserCompanies")

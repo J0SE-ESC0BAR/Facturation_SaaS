@@ -91,6 +91,8 @@ namespace WebApp.UI.Data
                 entity.Property(e => e.TaxId).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.IdType).HasMaxLength(20).HasDefaultValue("RNC");
                 entity.Property(e => e.Country).HasMaxLength(100).HasDefaultValue("República Dominicana");
+                entity.Property(e => e.CreditLimit).HasPrecision(18, 2);
+                entity.Property(e => e.Balance).HasPrecision(18, 2);
 
                 entity.HasOne(e => e.Company)
                     .WithMany(c => c.Clients)
@@ -115,6 +117,8 @@ namespace WebApp.UI.Data
                 entity.Property(e => e.TaxRate).HasPrecision(5, 2).HasDefaultValue(18m);
                 entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
                 entity.Property(e => e.Cost).HasPrecision(18, 2);
+                entity.Property(e => e.Stock).HasPrecision(18, 4);
+                entity.Property(e => e.MinimumStock).HasPrecision(18, 4);
 
                 entity.HasOne(e => e.Company)
                     .WithMany(c => c.Products)
@@ -175,8 +179,10 @@ namespace WebApp.UI.Data
                 entity.Property(e => e.Quantity).HasPrecision(18, 4);
                 entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
                 entity.Property(e => e.Subtotal).HasPrecision(18, 2);
+                entity.Property(e => e.DiscountPercentage).HasPrecision(5, 2);
                 entity.Property(e => e.DiscountAmount).HasPrecision(18, 2);
                 entity.Property(e => e.SubtotalAfterDiscount).HasPrecision(18, 2);
+                entity.Property(e => e.TaxRate).HasPrecision(5, 2);
                 entity.Property(e => e.TaxAmount).HasPrecision(18, 2);
                 entity.Property(e => e.Total).HasPrecision(18, 2);
 
