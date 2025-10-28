@@ -1,0 +1,476 @@
+@* Componente Modal para Agregar/Editar Cliente *@
+@model WebApp.UI.Models.ClientViewModel
+
+<div id="clientFormModal" class="modal-overlay" style="display: none;">
+    <div class="modal-container modal-md">
+        <div class="modal-header">
+            <h4><i class="fas fa-user-plus"></i> <span id="clientModalTitle">Nuevo Cliente</span></h4>
+            <button type="button" class="btn-close-modal" onclick="ClientFormModal.close()">×</button>
+        </div>
+        
+        <form id="clientForm">
+            <div class="modal-body">
+                <!-- Tipo de Cliente -->
+                <div class="form-row">
+                    <div class="form-field-full">
+                        <label>Tipo de Cliente <span class="required">*</span></label>
+                        <select id="clientType" name="ClientType" class="form-select" required>
+                            <option value="">-- Seleccione --</option>
+                            <option value="Persona">Persona Natural</option>
+                            <option value="Empresa">Empresa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Información Básica -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label id="labelClientName">Nombre/Razón Social <span class="required">*</span></label>
+                        <input type="text" id="clientName" name="Name" class="form-control" required maxlength="200" />
+                    </div>
+                    <div class="form-field" id="fieldCommercialName" style="display: none;">
+                        <label>Nombre Comercial</label>
+                        <input type="text" id="clientCommercialName" name="CommercialName" class="form-control" maxlength="200" />
+                    </div>
+                </div>
+
+                <!-- Identificación -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label id="labelClientId">RNC/Cédula <span class="required">*</span></label>
+                        <input type="text" id="clientIdentification" name="TaxId" class="form-control" required maxlength="20" 
+                               placeholder="000-0000000-0" />
+                        <small class="form-text text-muted">Formato: XXX-XXXXXXX-X</small>
+                    </div>
+                    <div class="form-field">
+                        <label>Teléfono <span class="required">*</span></label>
+                        <input type="tel" id="clientPhone" name="Phone" class="form-control" required maxlength="20"
+                               placeholder="(809) 000-0000" />
+                    </div>
+                </div>
+
+                <!-- Email y Sitio Web -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" id="clientEmail" name="Email" class="form-control" required maxlength="100"
+                               placeholder="cliente@ejemplo.com" />
+                    </div>
+                    <div class="form-field">
+                        <label>Sitio Web</label>
+                        <input type="url" id="clientWebsite" name="Website" class="form-control" maxlength="200"
+                               placeholder="https://ejemplo.com" />
+                    </div>
+                </div>
+
+                <!-- Dirección -->
+                <div class="form-row">
+                    <div class="form-field-full">
+                        <label>Dirección <span class="required">*</span></label>
+                        <textarea id="clientAddress" name="Address" class="form-control" rows="2" required maxlength="500"
+                                  placeholder="Calle, número, sector, ciudad"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Ciudad</label>
+                        <input type="text" id="clientCity" name="City" class="form-control" maxlength="100" />
+                    </div>
+                    <div class="form-field">
+                        <label>Provincia</label>
+                        <select id="clientProvince" name="Province" class="form-select">
+                            <option value="">-- Seleccione --</option>
+                            <option value="Distrito Nacional">Distrito Nacional</option>
+                            <option value="Santo Domingo">Santo Domingo</option>
+                            <option value="Santiago">Santiago</option>
+                            <option value="La Vega">La Vega</option>
+                            <option value="Puerto Plata">Puerto Plata</option>
+                            <option value="San Cristóbal">San Cristóbal</option>
+                            <option value="San Pedro de Macorís">San Pedro de Macorís</option>
+                            <option value="La Altagracia">La Altagracia</option>
+                            <!-- Agregar más provincias según necesidad -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Información Adicional -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Estado</label>
+                        <select id="clientStatus" name="Status" class="form-select">
+                            <option value="Activo" selected>Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Categoría</label>
+                        <select id="clientCategory" name="Category" class="form-select">
+                            <option value="">-- Seleccione --</option>
+                            <option value="Regular">Regular</option>
+                            <option value="VIP">VIP</option>
+                            <option value="Mayorista">Mayorista</option>
+                            <option value="Minorista">Minorista</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field-full">
+                        <label>Notas</label>
+                        <textarea id="clientNotes" name="Notes" class="form-control" rows="2" maxlength="1000"
+                                  placeholder="Notas adicionales sobre el cliente"></textarea>
+                    </div>
+                </div>
+
+                <input type="hidden" id="clientId" name="Id" value="0" />
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Guardar Cliente
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="ClientFormModal.close()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Componente ClientFormModal - Manejador del modal de cliente
+    const ClientFormModal = (function() {
+        let onSaveCallback = null;
+        let isEditMode = false;
+
+        // Inicialización
+        function init() {
+            // Event listener para cambio de tipo de cliente
+            $('#clientType').on('change', function() {
+                updateFieldsByClientType($(this).val());
+            });
+
+            // Event listener para el formulario
+            $('#clientForm').on('submit', function(e) {
+                e.preventDefault();
+                saveClient();
+            });
+
+            // Formateo automático de RNC/Cédula
+            $('#clientIdentification').on('input', function() {
+                formatTaxId($(this));
+            });
+
+            // Formateo automático de teléfono
+            $('#clientPhone').on('input', function() {
+                formatPhone($(this));
+            });
+        }
+
+        // Abrir modal para nuevo cliente
+        function open(callback) {
+            isEditMode = false;
+            onSaveCallback = callback;
+            
+            $('#clientModalTitle').text('Nuevo Cliente');
+            $('#clientForm')[0].reset();
+            $('#clientId').val('0');
+            $('#clientStatus').val('Activo');
+            
+            $('#clientFormModal').fadeIn(200);
+            $('body').css('overflow', 'hidden');
+            
+            // Focus en el primer campo
+            setTimeout(() => $('#clientType').focus(), 250);
+        }
+
+        // Abrir modal para editar cliente
+        function edit(clientData, callback) {
+            isEditMode = true;
+            onSaveCallback = callback;
+            
+            $('#clientModalTitle').text('Editar Cliente');
+            
+            // Llenar formulario con datos del cliente
+            $('#clientId').val(clientData.id || 0);
+            $('#clientType').val(clientData.clientType || 'Persona').trigger('change');
+            $('#clientName').val(clientData.name || '');
+            $('#clientCommercialName').val(clientData.commercialName || '');
+            $('#clientIdentification').val(clientData.taxId || '');
+            $('#clientPhone').val(clientData.phone || '');
+            $('#clientEmail').val(clientData.email || '');
+            $('#clientWebsite').val(clientData.website || '');
+            $('#clientAddress').val(clientData.address || '');
+            $('#clientCity').val(clientData.city || '');
+            $('#clientProvince').val(clientData.province || '');
+            $('#clientStatus').val(clientData.status || 'Activo');
+            $('#clientCategory').val(clientData.category || '');
+            $('#clientNotes').val(clientData.notes || '');
+            
+            $('#clientFormModal').fadeIn(200);
+            $('body').css('overflow', 'hidden');
+        }
+
+        // Cerrar modal
+        function close() {
+            $('#clientFormModal').fadeOut(200);
+            $('body').css('overflow', 'auto');
+            $('#clientForm')[0].reset();
+            onSaveCallback = null;
+        }
+
+        // Actualizar campos según tipo de cliente
+        function updateFieldsByClientType(type) {
+            if (type === 'Empresa') {
+                $('#labelClientName').text('Razón Social');
+                $('#labelClientId').text('RNC');
+                $('#fieldCommercialName').show();
+                $('#clientIdentification').attr('placeholder', '000-00000-0');
+            } else {
+                $('#labelClientName').text('Nombre Completo');
+                $('#labelClientId').text('Cédula');
+                $('#fieldCommercialName').hide();
+                $('#clientIdentification').attr('placeholder', '000-0000000-0');
+            }
+        }
+
+        // Guardar cliente
+        async function saveClient() {
+            if (!$('#clientForm')[0].checkValidity()) {
+                $('#clientForm')[0].reportValidity();
+                return;
+            }
+
+            const formData = {
+                id: parseInt($('#clientId').val()) || 0,
+                clientType: $('#clientType').val(),
+                name: $('#clientName').val(),
+                commercialName: $('#clientCommercialName').val(),
+                taxId: $('#clientIdentification').val(),
+                phone: $('#clientPhone').val(),
+                email: $('#clientEmail').val(),
+                website: $('#clientWebsite').val(),
+                address: $('#clientAddress').val(),
+                city: $('#clientCity').val(),
+                province: $('#clientProvince').val(),
+                status: $('#clientStatus').val(),
+                category: $('#clientCategory').val(),
+                notes: $('#clientNotes').val()
+            };
+
+            try {
+                // Aquí iría la llamada a la API
+                // const response = await fetch('/api/clients', {
+                //     method: isEditMode ? 'PUT' : 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(formData)
+                // });
+
+                // Simulación de respuesta exitosa
+                const savedClient = {
+                    ...formData,
+                    id: formData.id || Date.now() // Simulación de ID
+                };
+
+                // Ejecutar callback si existe
+                if (onSaveCallback && typeof onSaveCallback === 'function') {
+                    onSaveCallback(savedClient);
+                }
+
+                // Mostrar mensaje de éxito
+                showSuccessMessage(isEditMode ? 'Cliente actualizado correctamente' : 'Cliente agregado correctamente');
+                
+                close();
+            } catch (error) {
+                console.error('Error al guardar cliente:', error);
+                alert('Error al guardar el cliente. Por favor, intente nuevamente.');
+            }
+        }
+
+        // Formatear RNC/Cédula
+        function formatTaxId(input) {
+            let value = input.val().replace(/\D/g, '');
+            const clientType = $('#clientType').val();
+            
+            if (clientType === 'Empresa' && value.length > 0) {
+                // Formato RNC: 000-00000-0
+                if (value.length > 3) value = value.slice(0, 3) + '-' + value.slice(3);
+                if (value.length > 9) value = value.slice(0, 9) + '-' + value.slice(9);
+                if (value.length > 11) value = value.slice(0, 11);
+            } else if (value.length > 0) {
+                // Formato Cédula: 000-0000000-0
+                if (value.length > 3) value = value.slice(0, 3) + '-' + value.slice(3);
+                if (value.length > 11) value = value.slice(0, 11) + '-' + value.slice(11);
+                if (value.length > 13) value = value.slice(0, 13);
+            }
+            
+            input.val(value);
+        }
+
+        // Formatear teléfono
+        function formatPhone(input) {
+            let value = input.val().replace(/\D/g, '');
+            
+            if (value.length > 0) {
+                // Formato: (809) 000-0000
+                if (value.length > 3) value = '(' + value.slice(0, 3) + ') ' + value.slice(3);
+                if (value.length > 9) value = value.slice(0, 9) + '-' + value.slice(9);
+                if (value.length > 14) value = value.slice(0, 14);
+            }
+            
+            input.val(value);
+        }
+
+        // Mostrar mensaje de éxito
+        function showSuccessMessage(message) {
+            // Implementar sistema de notificaciones toast
+            console.log(message);
+            // Temporal: usar alert
+            // alert(message);
+        }
+
+        // API pública del componente
+        return {
+            init: init,
+            open: open,
+            edit: edit,
+            close: close
+        };
+    })();
+
+    // Inicializar cuando el documento esté listo
+    $(document).ready(function() {
+        ClientFormModal.init();
+    });
+</script>
+
+<style>
+    /* Estilos específicos del modal de cliente */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.85);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        backdrop-filter: blur(4px);
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-container {
+        background: #fff;
+        border-radius: 0.75rem;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        animation: slideUp 0.3s ease-out;
+    }
+
+    .modal-md {
+        max-width: 700px;
+    }
+
+    .modal-lg {
+        max-width: 900px;
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #fff;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 0.75rem 0.75rem 0 0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .modal-header h4 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .btn-close-modal {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.75rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        opacity: 0.9;
+        transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn-close-modal:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        border-radius: 0 0 0.75rem 0.75rem;
+        position: sticky;
+        bottom: 0;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Scrollbar personalizada para el modal */
+    .modal-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .modal-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 0 0.75rem 0.75rem 0;
+    }
+
+    .modal-container::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+
+    .modal-container::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>

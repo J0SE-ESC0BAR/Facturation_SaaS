@@ -1,4 +1,5 @@
-@* filepath: c:\Users\jose.escobar\Documents\Facturation_SaaS\WebApp.UI\Views\Clients\Index.cshtml *@
+@model WebApp.UI.Models.ClientViewModel
+
 @{
     ViewData["Title"] = "Clientes";
 }
@@ -6,34 +7,59 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-users"></i> Clientes</h2>
-        <a asp-action="Create" class="btn btn-primary">
+        <button type="button" class="btn btn-success" onclick="openNewClientModal()">
             <i class="fas fa-plus"></i> Nuevo Cliente
-        </a>
+        </button>
     </div>
 
+    <!-- Filtros -->
+    <div class="filter-section">
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <label>Buscar:</label>
+                <input type="text" name="search" class="form-control" placeholder="Nombre, RNC, email..." id="search-clients" />
+            </div>
+            <div class="filter-group">
+                <label>Tipo:</label>
+                <select name="clientType" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="General">General</option>
+                    <option value="Empresa">Empresa</option>
+                    <option value="VIP">VIP</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Estado:</label>
+                <select name="isActive" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="true">Activos</option>
+                    <option value="false">Inactivos</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+    </div>
+
+    <!-- Tabla de Clientes -->
     <div class="card">
         <div class="card-body">
-            <div class="mb-3">
-                <input type="text" class="form-control" id="search-clients" placeholder="Buscar cliente...">
-            </div>
-            
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="clientsTable">
                     <thead>
                         <tr>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Teléfono</th>
-                            <th>Ciudad</th>
-                            <th>Acciones</th>
+                            <th width="25%">Nombre</th>
+                            <th width="15%">RNC/Cédula</th>
+                            <th width="20%">Email</th>
+                            <th width="12%">Teléfono</th>
+                            <th width="12%">Ciudad</th>
+                            <th width="8%">Tipo</th>
+                            <th width="8%">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="clients-table">
+                    <tbody id="clients-table-body">
                         <tr>
-                            <td colspan="5" class="text-center">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Cargando...</span>
-                                </div>
+                            <td colspan="7" class="text-center" style="padding: 40px;">
+                                <em>Cargando registros...</em>
                             </td>
                         </tr>
                     </tbody>
@@ -43,8 +69,198 @@
     </div>
 </div>
 
+@* Incluir componente modal de cliente reutilizable *@
+@await Html.PartialAsync("~/Views/Shared/Components/_ClientFormModal.cshtml")
+
 @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        console.log('Vista de Clientes cargada');
+        // Inicialización
+        $(document).ready(function() {
+            loadClients();
+            
+            // Manejar navegación del navegador (botón Atrás/Adelante)
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.modal === 'newClient') {
+                    // Si el estado indica que el modal debe estar abierto
+                    ClientFormModal.open(handleClientSaved);
+                } else {
+                    // Cerrar el modal si se navega hacia atrás
+                    ClientFormModal.close();
+                }
+            });
+        });
+
+        // Abrir modal para nuevo cliente con actualización de URL
+        function openNewClientModal() {
+            ClientFormModal.open(handleClientSaved);
+            
+            // Actualizar URL sin recargar la página
+            const newUrl = '@Url.Action("Create", "Clients")';
+            history.pushState({ modal: 'newClient' }, '', newUrl);
+        }
+
+        // Manejar cliente guardado
+        function handleClientSaved(savedClient) {
+            console.log('Cliente guardado:', savedClient);
+            
+            // Recargar la tabla de clientes
+            loadClients();
+            
+            // Mostrar notificación
+            Notify.success('Cliente agregado correctamente');
+            
+            // Restaurar URL a /Clients
+            const indexUrl = '@Url.Action("Index", "Clients")';
+            history.pushState({ modal: null }, '', indexUrl);
+        }
+
+        // Cargar clientes (simulado)
+        function loadClients() {
+            const tbody = $('#clients-table-body');
+            
+            // Datos demo
+            const demoClients = [
+                { id: 1, name: 'Comercial Pérez SRL', taxId: '101-23456-7', email: 'contacto@perez.com', phone: '(809) 555-1234', city: 'Santo Domingo', type: 'Empresa' },
+                { id: 2, name: 'Supermercado La Económica', taxId: '101-98765-4', email: 'ventas@economica.com', phone: '(809) 555-5678', city: 'Santiago', type: 'VIP' },
+                { id: 3, name: 'María García López', taxId: '001-1234567-8', email: 'maria@email.com', phone: '(809) 555-9012', city: 'La Vega', type: 'General' }
+            ];
+
+            tbody.empty();
+
+            if (demoClients.length === 0) {
+                tbody.html(`
+                    <tr>
+                        <td colspan="7" class="text-center" style="padding: 40px;">
+                            <em>No hay clientes registrados</em>
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            demoClients.forEach(client => {
+                tbody.append(`
+                    <tr>
+                        <td><strong>${client.name}</strong></td>
+                        <td>${client.taxId}</td>
+                        <td>${client.email}</td>
+                        <td>${client.phone}</td>
+                        <td>${client.city}</td>
+                        <td><span class="badge bg-info">${client.type}</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary" onclick="editClient(${client.id})" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" onclick="deleteClient(${client.id})" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        // Editar cliente
+        function editClient(clientId) {
+            // Simulación de obtener datos del cliente
+            // TODO: Reemplazar con llamada real a la API
+            const clientData = {
+                id: clientId,
+                clientType: 'Empresa',
+                name: 'Comercial Pérez SRL',
+                commercialName: 'Pérez',
+                taxId: '101-23456-7',
+                phone: '(809) 555-1234',
+                email: 'contacto@perez.com',
+                website: 'https://perez.com',
+                address: 'Av. Principal #123',
+                city: 'Santo Domingo',
+                province: 'Distrito Nacional',
+                status: 'Activo',
+                category: 'Regular',
+                notes: 'Cliente corporativo'
+            };
+
+            ClientFormModal.edit(clientData, function(updatedClient) {
+                console.log('Cliente actualizado:', updatedClient);
+                
+                // Recargar la tabla de clientes
+                loadClients();
+                
+                // Mostrar notificación
+                Notify.success('Cliente actualizado correctamente');
+            });
+            
+            // Actualizar URL
+            const editUrl = `@Url.Action("Edit", "Clients")/${clientId}`;
+            history.pushState({ modal: 'editClient', clientId: clientId }, '', editUrl);
+        }
+
+        // Eliminar cliente
+        function deleteClient(clientId) {
+            if (confirm('¿Está seguro de eliminar este cliente?\n\nEsta acción no se puede deshacer.')) {
+                // TODO: Implementar llamada real a la API
+                // ModalUtils.apiRequest(`/api/clients/${clientId}`, {
+                //     method: 'DELETE'
+                // }).then(() => {
+                //     Notify.success('Cliente eliminado correctamente');
+                //     loadClients();
+                // }).catch(() => {
+                //     Notify.error('Error al eliminar el cliente');
+                // });
+
+                // Simulación
+                Notify.success('Cliente eliminado correctamente');
+                loadClients();
+            }
+        }
     </script>
 }
+
+<style>
+    /* Estilos específicos de la vista de Clientes */
+    .filter-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-form {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 150px;
+    }
+    
+    .filter-group label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.375rem;
+        color: #475569;
+    }
+
+    /* Responsivo */
+    @@media (max-width: 768px) {
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-group {
+            min-width: 100%;
+        }
+    }
+</style>
+```

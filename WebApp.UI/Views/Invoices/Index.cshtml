@@ -1,48 +1,888 @@
-@* filepath: c:\Users\jose.escobar\Documents\Facturation_SaaS\WebApp.UI\Views\Invoices\Index.cshtml *@
+@model WebApp.UI.Models.InvoiceViewModel
+
 @{
     ViewData["Title"] = "Facturas";
 }
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="invoice-header">
         <h2><i class="fas fa-file-invoice"></i> Facturas</h2>
-        <a asp-action="Create" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" onclick="showNewInvoiceForm()">
             <i class="fas fa-plus"></i> Nueva Factura
-        </a>
+        </button>
     </div>
 
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Número</th>
-                            <th>Cliente</th>
-                            <th>Fecha</th>
-                            <th>Total</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="invoices-table">
-                        <tr>
-                            <td colspan="6" class="text-center">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Cargando...</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <!-- Filtros -->
+    <div class="filter-section">
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <label>Desde:</label>
+                <input type="date" name="dateFrom" class="form-control" />
             </div>
+            <div class="filter-group">
+                <label>Hasta:</label>
+                <input type="date" name="dateTo" class="form-control" />
+            </div>
+            <div class="filter-group">
+                <label>Estado:</label>
+                <select name="status" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="Borrador">Borrador</option>
+                    <option value="Enviada">Enviada</option>
+                    <option value="Pagada">Pagada</option>
+                    <option value="Vencida">Vencida</option>
+                    <option value="Cancelada">Cancelada</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+    </div>
+
+    <!-- Tabla de Facturas -->
+    <div class="table-section">
+        <table class="table-classic" id="invoicesTable">
+            <thead>
+                <tr>
+                    <th width="12%">N° Factura</th>
+                    <th width="25%">Cliente</th>
+                    <th width="12%">NCF</th>
+                    <th width="12%">Fecha Emisión</th>
+                    <th width="12%">Vencimiento</th>
+                    <th width="12%">Total</th>
+                    <th width="10%">Estado</th>
+                    <th width="5%">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="invoices-table-body">
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px;">
+                        <em>Cargando registros...</em>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Formulario Flotante para Nueva Factura -->
+<div id="newInvoiceOverlay" class="form-overlay" style="display: none;">
+    <div class="form-container-classic">
+        <div class="form-header">
+            <h4><i class="fas fa-file-invoice"></i> Nueva Factura</h4>
+            <button type="button" class="btn-close-classic" onclick="closeNewInvoiceForm()">×</button>
+        </div>
+        
+        <form id="invoiceForm" asp-action="Create" method="post">
+            <div class="form-body">
+                <!-- Sección 1: Información del Cliente -->
+                <fieldset class="form-section">
+                    <legend>Datos del Cliente</legend>
+                    
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label asp-for="ClientId">Cliente: <span class="required">*</span></label>
+                            <div class="input-with-button">
+                                <select asp-for="ClientId" class="form-select" id="clientSelect" required>
+                                    <option value="">-- Seleccione cliente --</option>
+                                </select>
+                                <button type="button" class="btn btn-success btn-icon" onclick="openNewClientModal()" title="Agregar nuevo cliente">
+                                    <i class="fas fa-user-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Sección 2: Datos de la Factura -->
+                <fieldset class="form-section">
+                    <legend>Datos de la Factura</legend>
+                    
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label asp-for="InvoiceNumber">N° Factura:</label>
+                            <input asp-for="InvoiceNumber" type="text" class="form-control" readonly placeholder="Se generará automáticamente" />
+                        </div>
+                        <div class="form-field">
+                            <label asp-for="NCFSequence">Tipo NCF: <span class="required">*</span></label>
+                            <select asp-for="NCFSequence" class="form-select" required>
+                                <option value="">-- Seleccione --</option>
+                                <option value="B01">B01 - Crédito Fiscal</option>
+                                <option value="B02">B02 - Consumidor Final</option>
+                                <option value="B14">B14 - Registro Único</option>
+                                <option value="B15">B15 - Gubernamental</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label asp-for="IssueDate">Fecha Emisión: <span class="required">*</span></label>
+                            <input asp-for="IssueDate" type="date" class="form-control" required />
+                        </div>
+                        <div class="form-field">
+                            <label asp-for="DueDate">Fecha Vencimiento: <span class="required">*</span></label>
+                            <input asp-for="DueDate" type="date" class="form-control" required />
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Sección 3: Items de la Factura -->
+                <fieldset class="form-section">
+                    <legend>Conceptos</legend>
+                    
+                    <div class="items-toolbar">
+                        <button type="button" class="btn btn-sm btn-success" onclick="showAddItemForm()">
+                            <i class="fas fa-plus"></i> Agregar Concepto
+                        </button>
+                    </div>
+
+                    <table class="table table-items" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th width="35%">Descripción</th>
+                                <th width="15%">Cantidad</th>
+                                <th width="15%">Precio Unit.</th>
+                                <th width="10%">ITBIS</th>
+                                <th width="15%">Total</th>
+                                <th width="10%"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                            <tr class="no-items-row">
+                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                    <em>No hay conceptos agregados</em>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+
+                <!-- Sección 4: Totales -->
+                <fieldset class="form-section">
+                    <legend>Totales</legend>
+                    
+                    <div class="totals-section">
+                        <div class="total-row">
+                            <span>Subtotal:</span>
+                            <strong id="displaySubtotal">RD$ 0.00</strong>
+                        </div>
+                        <div class="total-row">
+                            <span>ITBIS (18%):</span>
+                            <strong id="displayTax">RD$ 0.00</strong>
+                        </div>
+                        <div class="total-row total-final">
+                            <span>Total:</span>
+                            <strong id="displayTotal">RD$ 0.00</strong>
+                        </div>
+                    </div>
+
+                    <input type="hidden" asp-for="Subtotal" id="hiddenSubtotal" />
+                    <input type="hidden" asp-for="TaxAmount" id="hiddenTax" />
+                    <input type="hidden" asp-for="Total" id="hiddenTotal" />
+                </fieldset>
+
+                <!-- Sección 5: Notas -->
+                <fieldset class="form-section">
+                    <legend>Observaciones</legend>
+                    
+                    <div class="form-row">
+                        <div class="form-field-full">
+                            <label asp-for="Notes">Notas:</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Factura
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="closeNewInvoiceForm()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Formulario para Agregar Item -->
+<div id="addItemOverlay" class="form-overlay" style="display: none;">
+    <div class="form-container-classic-small">
+        <div class="form-header">
+            <h4><i class="fas fa-plus-circle"></i> Agregar Concepto</h4>
+            <button type="button" class="btn-close-classic" onclick="closeAddItemForm()">×</button>
+        </div>
+        
+        <div class="form-body">
+            <div class="form-row">
+                <div class="form-field-full">
+                    <label>Producto/Servicio: <span class="required">*</span></label>
+                    <select id="itemProductId" class="form-select">
+                        <option value="">-- Seleccione --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field-full">
+                    <label>Descripción:</label>
+                    <input type="text" id="itemDescription" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Cantidad: <span class="required">*</span></label>
+                    <input type="number" id="itemQuantity" class="form-control" value="1" step="0.01" min="0.01" />
+                </div>
+                <div class="form-field">
+                    <label>Precio Unitario: <span class="required">*</span></label>
+                    <input type="number" id="itemPrice" class="form-control" value="0" step="0.01" min="0" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="itemApplyTax" checked />
+                        <label class="form-check-label" for="itemApplyTax">
+                            Aplicar ITBIS (18%)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="alert alert-info mb-0">
+                    <strong>Total del concepto:</strong> <span id="itemTotalDisplay">RD$ 0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <button type="button" class="btn btn-primary" onclick="addItemToInvoice()">
+                <i class="fas fa-check"></i> Agregar
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="closeAddItemForm()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
         </div>
     </div>
 </div>
 
+@* Incluir componente modal de cliente *@
+@await Html.PartialAsync("~/Views/Shared/Components/_ClientFormModal.cshtml")
+
 @section Scripts {
     <script>
-        // Aquí cargarás los datos desde la API
-        console.log('Vista de Facturas cargada');
+        // Variables globales
+        let invoiceItems = [];
+        let itemIdCounter = 0;
+        const TAX_RATE = 0.18;
+
+        // Inicialización
+        $(document).ready(function() {
+            loadInvoices();
+            loadClients();
+            loadProducts();
+            setDefaultDates();
+            
+            // Event listeners para cálculo automático
+            $('#itemQuantity, #itemPrice').on('input', calculateItemTotal);
+            $('#itemApplyTax').on('change', calculateItemTotal);
+            $('#itemProductId').on('change', updateItemPrice);
+            
+            // Manejar navegación del navegador (botón Atrás/Adelante)
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.modal === 'newInvoice') {
+                    // Si el estado indica que el modal debe estar abierto
+                    $('#newInvoiceOverlay').fadeIn(200);
+                    $('body').css('overflow', 'hidden');
+                } else {
+                    // Cerrar el modal si se navega hacia atrás
+                    $('#newInvoiceOverlay').fadeOut(200);
+                    $('body').css('overflow', 'auto');
+                }
+            });
+        });
+
+        // Establecer fechas por defecto
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            
+            $('[name="IssueDate"]').val(today);
+            $('[name="DueDate"]').val(dueDate.toISOString().split('T')[0]);
+        }
+
+        // Mostrar/Ocultar formulario de nueva factura
+        function showNewInvoiceForm() {
+            $('#newInvoiceOverlay').fadeIn(200);
+            $('body').css('overflow', 'hidden');
+            
+            // Actualizar URL sin recargar la página
+            const newUrl = '@Url.Action("Create", "Invoices")';
+            history.pushState({ modal: 'newInvoice' }, '', newUrl);
+        }
+
+        function closeNewInvoiceForm() {
+            $('#newInvoiceOverlay').fadeOut(200);
+            $('body').css('overflow', 'auto');
+            $('#invoiceForm')[0].reset();
+            invoiceItems = [];
+            renderItems();
+            updateTotals();
+            
+            // Restaurar URL a /Invoices
+            const indexUrl = '@Url.Action("Index", "Invoices")';
+            history.pushState({ modal: null }, '', indexUrl);
+        }
+
+        // Mostrar/Ocultar formulario de agregar item
+        function showAddItemForm() {
+            const clientId = $('#clientSelect').val();
+            if (!clientId) {
+                alert('Por favor, seleccione un cliente primero.');
+                return;
+            }
+            $('#addItemOverlay').fadeIn(200);
+        }
+
+        function closeAddItemForm() {
+            $('#addItemOverlay').fadeOut(200);
+            $('#itemProductId').val('');
+            $('#itemDescription').val('');
+            $('#itemQuantity').val(1);
+            $('#itemPrice').val(0);
+            $('#itemApplyTax').prop('checked', true);
+            $('#itemTotalDisplay').text('RD$ 0.00');
+        }
+
+        // Calcular total del item
+        function calculateItemTotal() {
+            const quantity = parseFloat($('#itemQuantity').val()) || 0;
+            const price = parseFloat($('#itemPrice').val()) || 0;
+            const applyTax = $('#itemApplyTax').is(':checked');
+            
+            let subtotal = quantity * price;
+            const tax = applyTax ? subtotal * TAX_RATE : 0;
+            const total = subtotal + tax;
+            
+            $('#itemTotalDisplay').text('RD$ ' + total.toFixed(2));
+        }
+
+        // Actualizar precio cuando se selecciona producto
+        function updateItemPrice() {
+            const selectedOption = $('#itemProductId option:selected');
+            const price = selectedOption.data('price') || 0;
+            $('#itemPrice').val(price);
+            calculateItemTotal();
+        }
+
+        // Agregar item a la factura
+        function addItemToInvoice() {
+            const productId = $('#itemProductId').val();
+            const productName = $('#itemProductId option:selected').text();
+            const description = $('#itemDescription').val();
+            const quantity = parseFloat($('#itemQuantity').val()) || 0;
+            const price = parseFloat($('#itemPrice').val()) || 0;
+            const applyTax = $('#itemApplyTax').is(':checked');
+            
+            if (!productId) {
+                alert('Seleccione un producto/servicio.');
+                return;
+            }
+            
+            if (quantity <= 0) {
+                alert('La cantidad debe ser mayor a 0.');
+                return;
+            }
+
+            const subtotal = quantity * price;
+            const tax = applyTax ? subtotal * TAX_RATE : 0;
+            const total = subtotal + tax;
+
+            invoiceItems.push({
+                id: itemIdCounter++,
+                productId: productId,
+                productName: productName,
+                description: description,
+                quantity: quantity,
+                price: price,
+                applyTax: applyTax,
+                subtotal: subtotal,
+                tax: tax,
+                total: total
+            });
+
+            renderItems();
+            updateTotals();
+            closeAddItemForm();
+        }
+
+        // Renderizar items en la tabla
+        function renderItems() {
+            const tbody = $('#itemsTableBody');
+            tbody.empty();
+
+            if (invoiceItems.length === 0) {
+                tbody.append(`
+                    <tr class="no-items-row">
+                        <td colspan="6" style="text-align: center; padding: 20px;">
+                            <em>No hay conceptos agregados</em>
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            invoiceItems.forEach(item => {
+                tbody.append(`
+                    <tr>
+                        <td>${item.description || item.productName}</td>
+                        <td style="text-align: right;">${item.quantity.toFixed(2)}</td>
+                        <td style="text-align: right;">RD$ ${item.price.toFixed(2)}</td>
+                        <td style="text-align: center;">${item.applyTax ? 'Sí' : 'No'}</td>
+                        <td style="text-align: right;"><strong>RD$ ${item.total.toFixed(2)}</strong></td>
+                        <td style="text-align: center;">
+                            <button type="button" onclick="removeItem(${item.id})" class="btn-delete">×</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        // Eliminar item
+        function removeItem(itemId) {
+            if (confirm('¿Eliminar este concepto?')) {
+                invoiceItems = invoiceItems.filter(item => item.id !== itemId);
+                renderItems();
+                updateTotals();
+            }
+        }
+
+        // Actualizar totales
+        function updateTotals() {
+            let subtotal = 0;
+            let tax = 0;
+
+            invoiceItems.forEach(item => {
+                subtotal += item.subtotal;
+                tax += item.tax;
+            });
+
+            const total = subtotal + tax;
+
+            $('#displaySubtotal').text('RD$ ' + subtotal.toFixed(2));
+            $('#displayTax').text('RD$ ' + tax.toFixed(2));
+            $('#displayTotal').text('RD$ ' + total.toFixed(2));
+
+            $('#hiddenSubtotal').val(subtotal.toFixed(2));
+            $('#hiddenTax').val(tax.toFixed(2));
+            $('#hiddenTotal').val(total.toFixed(2));
+        }
+
+        // Cargar facturas (simulado)
+        function loadInvoices() {
+            const tbody = $('#invoices-table-body');
+            tbody.html(`
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px;">
+                        <em>No hay facturas registradas</em>
+                    </td>
+                </tr>
+            `);
+        }
+
+        // Cargar clientes (simulado)
+        function loadClients() {
+            const demoClients = [
+                { id: 1, name: 'Cliente Demo 1' },
+                { id: 2, name: 'Cliente Demo 2' },
+                { id: 3, name: 'Cliente Demo 3' }
+            ];
+            
+            const select = $('#clientSelect');
+            demoClients.forEach(client => {
+                select.append(`<option value="${client.id}">${client.name}</option>`);
+            });
+        }
+
+        // Cargar productos (simulado)
+        function loadProducts() {
+            const demoProducts = [
+                { id: 1, name: 'Producto A', price: 100.00 },
+                { id: 2, name: 'Servicio B', price: 250.00 },
+                { id: 3, name: 'Producto C', price: 75.50 }
+            ];
+            
+            const select = $('#itemProductId');
+            select.empty();
+            select.append('<option value="">-- Seleccione --</option>');
+            demoProducts.forEach(product => {
+                select.append(`<option value="${product.id}" data-price="${product.price}">${product.name}</option>`);
+            });
+        }
+
+        // Abrir modal para agregar nuevo cliente
+        function openNewClientModal() {
+            ClientFormModal.open(function(savedClient) {
+                // Callback cuando se guarda el cliente
+                console.log('Cliente guardado:', savedClient);
+                
+                // Agregar el nuevo cliente al select
+                const select = $('#clientSelect');
+                const newOption = `<option value="${savedClient.id}" selected>${savedClient.name}</option>`;
+                select.append(newOption);
+                
+                // Opcional: Mostrar notificación
+                showNotification('Cliente agregado correctamente', 'success');
+            });
+        }
+
+        // Mostrar notificación (sistema simple)
+        function showNotification(message, type = 'info') {
+            // Implementación simple con alert temporal
+            // TODO: Implementar sistema de notificaciones toast
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Validación antes de enviar
+        $('#invoiceForm').on('submit', function(e) {
+            if (invoiceItems.length === 0) {
+                e.preventDefault();
+                alert('Debe agregar al menos un concepto a la factura.');
+                return false;
+            }
+            return true;
+        });
     </script>
 }
+
+<style>
+    /* Header de facturas */
+    .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .invoice-header h2 {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    /* Input con botón al lado */
+    .input-with-button {
+        display: flex;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .input-with-button .form-select {
+        flex: 1;
+    }
+
+    .btn-icon {
+        padding: 0.375rem 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 38px;
+        white-space: nowrap;
+    }
+
+    .btn-icon i {
+        font-size: 1rem;
+    }
+    
+    /* Filtros */
+    .filter-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-form {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 150px;
+    }
+    
+    .filter-group label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.375rem;
+        color: #475569;
+    }
+    
+    /* Tabla */
+    .table-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table-classic {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    
+    .table-classic thead {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .table-classic th {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #475569;
+        border-bottom: none;
+    }
+    
+    .table-classic td {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #0f172a;
+        font-size: 0.875rem;
+    }
+    
+    .table-classic tbody tr:hover {
+        background: #f8fafc;
+    }
+    
+    .table-items {
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+    
+    .table-items thead {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .table-items th {
+        font-weight: 600;
+        color: #475569;
+        padding: 0.625rem;
+    }
+    
+    .table-items td {
+        padding: 0.625rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    /* Overlay */
+    .form-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.75);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        backdrop-filter: blur(4px);
+    }
+    
+    /* Contenedor del formulario */
+    .form-container-classic {
+        background: #fff;
+        border-radius: 0.75rem;
+        width: 100%;
+        max-width: 900px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .form-container-classic-small {
+        background: #fff;
+        border-radius: 0.75rem;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: #fff;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+    
+    .form-header h4 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+    
+    .btn-close-classic {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.75rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+    
+    .btn-close-classic:hover {
+        opacity: 1;
+    }
+    
+    .form-body {
+        padding: 1.5rem;
+    }
+    
+    .form-footer {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        border-radius: 0 0 0.75rem 0.75rem;
+    }
+    
+    /* Fieldsets */
+    .form-section {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        margin-bottom: 1.25rem;
+        padding: 1rem;
+        background: #f8fafc;
+    }
+    
+    .form-section legend {
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 0 0.5rem;
+        color: #475569;
+        width: auto;
+        margin-bottom: 0;
+    }
+    
+    /* Campos del formulario */
+    .form-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-field {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-field-full {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-field label,
+    .form-field-full label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.375rem;
+        color: #475569;
+    }
+    
+    .required {
+        color: #dc3545;
+    }
+    
+    /* Totales */
+    .totals-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.9375rem;
+        color: #475569;
+    }
+    
+    .total-final {
+        border-top: 2px solid #e2e8f0;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        font-size: 1.125rem;
+        color: #0f172a;
+    }
+    
+    .items-toolbar {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Botones */
+    .btn-delete {
+        background: none;
+        border: 1px solid #e2e8f0;
+        width: 28px;
+        height: 28px;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 1.125rem;
+        color: #64748b;
+        transition: all 0.2s;
+    }
+    
+    .btn-delete:hover {
+        background: #dc3545;
+        color: #fff;
+        border-color: #dc3545;
+    }
+    
+    /* Responsivo */
+    @@media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+        
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-group {
+            min-width: 100%;
+        }
+    }
+</style>

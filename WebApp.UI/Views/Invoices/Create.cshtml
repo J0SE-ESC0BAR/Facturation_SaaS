@@ -1,0 +1,653 @@
+@model WebApp.UI.Models.InvoiceViewModel
+
+@{
+    ViewData["Title"] = "Nueva Factura";
+}
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="header-content">
+            <h2><i class="fas fa-file-invoice"></i> Nueva Factura</h2>
+            <a href="@Url.Action("Index", "Invoices")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a Facturas
+            </a>
+        </div>
+    </div>
+
+    <form id="invoiceForm" asp-action="Create" method="post">
+        <div class="form-container">
+            <!-- Sección 1: Información del Cliente -->
+            <fieldset class="form-section">
+                <legend>Información del Cliente</legend>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Cliente <span class="required">*</span></label>
+                        <select id="clientSelect" name="ClientId" class="form-select" required>
+                            <option value="">-- Seleccione un cliente --</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Fecha de Emisión <span class="required">*</span></label>
+                        <input type="date" name="IssueDate" class="form-control" required />
+                    </div>
+                    <div class="form-field">
+                        <label>Fecha de Vencimiento <span class="required">*</span></label>
+                        <input type="date" name="DueDate" class="form-control" required />
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Sección 2: Conceptos/Items -->
+            <fieldset class="form-section">
+                <legend>Conceptos</legend>
+                <div class="items-toolbar">
+                    <button type="button" class="btn btn-sm btn-primary" onclick="showAddItemForm()">
+                        <i class="fas fa-plus"></i> Agregar Concepto
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-items">
+                        <thead>
+                            <tr>
+                                <th>Producto/Servicio</th>
+                                <th>Descripción</th>
+                                <th style="width: 80px;">Cantidad</th>
+                                <th style="width: 100px;">Precio</th>
+                                <th style="width: 80px;">ITBIS</th>
+                                <th style="width: 100px;">Total</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    No hay conceptos agregados. Haga clic en "Agregar Concepto" para comenzar.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+
+            <!-- Sección 3: Totales -->
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="form-section">
+                        <legend>Notas</legend>
+                        <div class="form-field-full">
+                            <label>Notas adicionales</label>
+                            <textarea name="Notes" class="form-control" rows="3" placeholder="Notas o comentarios adicionales..."></textarea>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <div class="totals-section">
+                        <div class="total-row">
+                            <strong>Subtotal:</strong>
+                            <span id="displaySubtotal">RD$ 0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <strong>ITBIS (18%):</strong>
+                            <span id="displayTax">RD$ 0.00</span>
+                        </div>
+                        <div class="total-row total-final">
+                            <strong>TOTAL:</strong>
+                            <strong id="displayTotal">RD$ 0.00</strong>
+                        </div>
+
+                        <!-- Campos ocultos para enviar -->
+                        <input type="hidden" name="Subtotal" id="hiddenSubtotal" value="0" />
+                        <input type="hidden" name="TaxAmount" id="hiddenTax" value="0" />
+                        <input type="hidden" name="Total" id="hiddenTotal" value="0" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fas fa-save"></i> Guardar Factura
+                </button>
+                <a href="@Url.Action("Index", "Invoices")" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Formulario para Agregar Item -->
+<div id="addItemOverlay" class="form-overlay" style="display: none;">
+    <div class="form-container-classic-small">
+        <div class="form-header">
+            <h4><i class="fas fa-plus-circle"></i> Agregar Concepto</h4>
+            <button type="button" class="btn-close-classic" onclick="closeAddItemForm()">×</button>
+        </div>
+        
+        <div class="form-body">
+            <div class="form-row">
+                <div class="form-field-full">
+                    <label>Producto/Servicio <span class="required">*</span></label>
+                    <select id="itemProductId" class="form-select">
+                        <option value="">-- Seleccione --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field-full">
+                    <label>Descripción</label>
+                    <textarea id="itemDescription" class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label>Cantidad <span class="required">*</span></label>
+                    <input type="number" id="itemQuantity" class="form-control" value="1" min="0.01" step="0.01" />
+                </div>
+                <div class="form-field">
+                    <label>Precio Unitario <span class="required">*</span></label>
+                    <input type="number" id="itemPrice" class="form-control" value="0" min="0" step="0.01" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label>
+                        <input type="checkbox" id="itemApplyTax" checked />
+                        Aplicar ITBIS (18%)
+                    </label>
+                </div>
+                <div class="form-field text-end">
+                    <label>Total:</label>
+                    <h5 id="itemTotalDisplay" class="text-primary">RD$ 0.00</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <button type="button" class="btn btn-primary" onclick="addItemToInvoice()">
+                <i class="fas fa-check"></i> Agregar
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="closeAddItemForm()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Variables globales
+        let invoiceItems = [];
+        let itemIdCounter = 0;
+        const TAX_RATE = 0.18;
+
+        // Inicialización
+        $(document).ready(function() {
+            loadClients();
+            loadProducts();
+            setDefaultDates();
+            
+            // Event listeners para cálculo automático
+            $('#itemQuantity, #itemPrice').on('input', calculateItemTotal);
+            $('#itemApplyTax').on('change', calculateItemTotal);
+            $('#itemProductId').on('change', updateItemPrice);
+        });
+
+        // Establecer fechas por defecto
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            
+            $('[name="IssueDate"]').val(today);
+            $('[name="DueDate"]').val(dueDate.toISOString().split('T')[0]);
+        }
+
+        // Mostrar/Ocultar formulario de agregar item
+        function showAddItemForm() {
+            const clientId = $('#clientSelect').val();
+            if (!clientId) {
+                alert('Por favor, seleccione un cliente primero');
+                return;
+            }
+            $('#addItemOverlay').fadeIn(200);
+        }
+
+        function closeAddItemForm() {
+            $('#addItemOverlay').fadeOut(200);
+            $('#itemProductId').val('');
+            $('#itemDescription').val('');
+            $('#itemQuantity').val(1);
+            $('#itemPrice').val(0);
+            $('#itemApplyTax').prop('checked', true);
+            $('#itemTotalDisplay').text('RD$ 0.00');
+        }
+
+        // Calcular total del item
+        function calculateItemTotal() {
+            const quantity = parseFloat($('#itemQuantity').val()) || 0;
+            const price = parseFloat($('#itemPrice').val()) || 0;
+            const applyTax = $('#itemApplyTax').is(':checked');
+            
+            let subtotal = quantity * price;
+            const tax = applyTax ? subtotal * TAX_RATE : 0;
+            const total = subtotal + tax;
+            
+            $('#itemTotalDisplay').text('RD$ ' + total.toFixed(2));
+        }
+
+        // Actualizar precio cuando se selecciona producto
+        function updateItemPrice() {
+            const selectedOption = $('#itemProductId option:selected');
+            const price = selectedOption.data('price') || 0;
+            const description = selectedOption.data('description') || '';
+            $('#itemPrice').val(price);
+            if (description) {
+                $('#itemDescription').val(description);
+            }
+            calculateItemTotal();
+        }
+
+        // Agregar item a la factura
+        function addItemToInvoice() {
+            const productId = $('#itemProductId').val();
+            const productName = $('#itemProductId option:selected').text();
+            const description = $('#itemDescription').val();
+            const quantity = parseFloat($('#itemQuantity').val()) || 0;
+            const price = parseFloat($('#itemPrice').val()) || 0;
+            const applyTax = $('#itemApplyTax').is(':checked');
+            
+            if (!productId) {
+                alert('Por favor, seleccione un producto');
+                return;
+            }
+            
+            if (quantity <= 0) {
+                alert('La cantidad debe ser mayor a 0');
+                return;
+            }
+
+            const subtotal = quantity * price;
+            const tax = applyTax ? subtotal * TAX_RATE : 0;
+            const total = subtotal + tax;
+
+            invoiceItems.push({
+                id: ++itemIdCounter,
+                productId: productId,
+                productName: productName,
+                description: description || productName,
+                quantity: quantity,
+                unitPrice: price,
+                applyTax: applyTax,
+                subtotal: subtotal,
+                tax: tax,
+                total: total
+            });
+
+            renderItems();
+            updateTotals();
+            closeAddItemForm();
+        }
+
+        // Renderizar items en la tabla
+        function renderItems() {
+            const tbody = $('#itemsTableBody');
+            tbody.empty();
+
+            if (invoiceItems.length === 0) {
+                tbody.html(`
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            No hay conceptos agregados. Haga clic en "Agregar Concepto" para comenzar.
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            invoiceItems.forEach((item, index) => {
+                tbody.append(`
+                    <tr>
+                        <td>${item.productName}</td>
+                        <td>${item.description}</td>
+                        <td class="text-end">${item.quantity}</td>
+                        <td class="text-end">RD$ ${item.unitPrice.toFixed(2)}</td>
+                        <td class="text-end">RD$ ${item.tax.toFixed(2)}</td>
+                        <td class="text-end"><strong>RD$ ${item.total.toFixed(2)}</strong></td>
+                        <td class="text-center">
+                            <button type="button" class="btn-delete" onclick="removeItem(${item.id})" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <input type="hidden" name="Items[${index}].ProductId" value="${item.productId}" />
+                    <input type="hidden" name="Items[${index}].Description" value="${item.description}" />
+                    <input type="hidden" name="Items[${index}].Quantity" value="${item.quantity}" />
+                    <input type="hidden" name="Items[${index}].UnitPrice" value="${item.unitPrice}" />
+                    <input type="hidden" name="Items[${index}].ApplyTax" value="${item.applyTax}" />
+                    <input type="hidden" name="Items[${index}].Subtotal" value="${item.subtotal}" />
+                    <input type="hidden" name="Items[${index}].TaxAmount" value="${item.tax}" />
+                    <input type="hidden" name="Items[${index}].Total" value="${item.total}" />
+                `);
+            });
+        }
+
+        // Eliminar item
+        function removeItem(itemId) {
+            if (confirm('¿Eliminar este concepto?')) {
+                invoiceItems = invoiceItems.filter(item => item.id !== itemId);
+                renderItems();
+                updateTotals();
+            }
+        }
+
+        // Actualizar totales
+        function updateTotals() {
+            let subtotal = 0;
+            let tax = 0;
+
+            invoiceItems.forEach(item => {
+                subtotal += item.subtotal;
+                tax += item.tax;
+            });
+
+            const total = subtotal + tax;
+
+            $('#displaySubtotal').text('RD$ ' + subtotal.toFixed(2));
+            $('#displayTax').text('RD$ ' + tax.toFixed(2));
+            $('#displayTotal').text('RD$ ' + total.toFixed(2));
+
+            $('#hiddenSubtotal').val(subtotal.toFixed(2));
+            $('#hiddenTax').val(tax.toFixed(2));
+            $('#hiddenTotal').val(total.toFixed(2));
+        }
+
+        // Cargar clientes (simulado - reemplazar con llamada a API)
+        function loadClients() {
+            const demoClients = [
+                { id: 1, name: 'Cliente Demo 1' },
+                { id: 2, name: 'Cliente Demo 2' },
+                { id: 3, name: 'Cliente Demo 3' }
+            ];
+            
+            const select = $('#clientSelect');
+            demoClients.forEach(client => {
+                select.append(`<option value="${client.id}">${client.name}</option>`);
+            });
+        }
+
+        // Cargar productos (simulado - reemplazar con llamada a API)
+        function loadProducts() {
+            const demoProducts = [
+                { id: 1, name: 'Producto 1', price: 100.00, description: 'Descripción del producto 1' },
+                { id: 2, name: 'Producto 2', price: 200.00, description: 'Descripción del producto 2' },
+                { id: 3, name: 'Servicio 1', price: 500.00, description: 'Descripción del servicio 1' }
+            ];
+            
+            const select = $('#itemProductId');
+            select.empty();
+            select.append('<option value="">-- Seleccione --</option>');
+            demoProducts.forEach(product => {
+                select.append(`<option value="${product.id}" data-price="${product.price}" data-description="${product.description}">${product.name}</option>`);
+            });
+        }
+
+        // Validación antes de enviar
+        $('#invoiceForm').on('submit', function(e) {
+            if (invoiceItems.length === 0) {
+                e.preventDefault();
+                alert('Debe agregar al menos un concepto a la factura');
+                return false;
+            }
+            return true;
+        });
+    </script>
+}
+
+<style>
+    /* Header de página */
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .header-content h2 {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+    
+    /* Contenedor del formulario */
+    .form-container {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Fieldsets */
+    .form-section {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        margin-bottom: 1.25rem;
+        padding: 1rem;
+        background: #f8fafc;
+    }
+    
+    .form-section legend {
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 0 0.5rem;
+        color: #475569;
+        width: auto;
+        margin-bottom: 0;
+    }
+    
+    /* Campos del formulario */
+    .form-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-field {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-field-full {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-field label,
+    .form-field-full label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.375rem;
+        color: #475569;
+    }
+    
+    .required {
+        color: #dc3545;
+    }
+    
+    /* Tabla de items */
+    .table-items {
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+    
+    .table-items thead {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .table-items th {
+        font-weight: 600;
+        color: #475569;
+        padding: 0.625rem;
+    }
+    
+    .table-items td {
+        padding: 0.625rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .items-toolbar {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Totales */
+    .totals-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.9375rem;
+        color: #475569;
+    }
+    
+    .total-final {
+        border-top: 2px solid #e2e8f0;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        font-size: 1.125rem;
+        color: #0f172a;
+    }
+    
+    /* Botones de acción */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #e2e8f0;
+    }
+    
+    .btn-delete {
+        background: none;
+        border: 1px solid #e2e8f0;
+        width: 28px;
+        height: 28px;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 1.125rem;
+        color: #64748b;
+        transition: all 0.2s;
+    }
+    
+    .btn-delete:hover {
+        background: #dc3545;
+        color: #fff;
+        border-color: #dc3545;
+    }
+    
+    /* Overlay */
+    .form-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.75);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        backdrop-filter: blur(4px);
+    }
+    
+    /* Contenedor del formulario modal */
+    .form-container-classic-small {
+        background: #fff;
+        border-radius: 0.75rem;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: #fff;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+    
+    .form-header h4 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+    
+    .btn-close-classic {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.75rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+    
+    .btn-close-classic:hover {
+        opacity: 1;
+    }
+    
+    .form-body {
+        padding: 1.5rem;
+    }
+    
+    .form-footer {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        border-radius: 0 0 0.75rem 0.75rem;
+    }
+    
+    /* Responsivo */
+    @@media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+        
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+</style>
